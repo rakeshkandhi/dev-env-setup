@@ -54,6 +54,8 @@ When running inside tmux (with or without Neovim open):
 | `Ctrl-a n` / `Ctrl-a p` | Switch to **Next / Previous** window |
 | `Ctrl-a &` | **Close** current window |
 
+> 💡 **Auto Folder Naming**: Windows are automatically titled after your current project directory name (e.g. `dev-env-setup`, `nvim`, `api`).
+
 ### Managing Panes (Splits inside tmux)
 
 | Shortcut | Action |
@@ -144,6 +146,8 @@ Both tmux and Neovim are configured to share your OS system clipboard (**macOS `
 | `Alt + k` | Move line / selection **Up** | Normal, Insert, Visual |
 | `<Esc>` | Clear search highlights (`nohlsearch`) | Normal |
 
+> 💡 **Mac Users**: `option_as_alt = "Both"` is enabled in Alacritty, so your Mac Option key acts natively as `Alt` for `Alt+j` and `Alt+k`.
+
 ### Git Integration (Gitsigns & Telescope)
 
 | Shortcut | Action |
@@ -171,3 +175,12 @@ Inside tmux:
 | `Ctrl-a U` | **Update** existing tmux plugins |
 | `Ctrl-a Alt-u` | Remove / clean unlisted plugins |
 | `Ctrl-a r` | **Reload** tmux configuration |
+
+---
+
+## 🚀 7. Config Optimizations Included
+
+- 🟢 **macOS Option Key Support**: `option_as_alt = "Both"` in Alacritty enables native `Alt+j`/`Alt+k` line shifting on Mac.
+- 🏷️ **Dynamic Folder Titles**: tmux tabs auto-rename to your current directory name.
+- █/│ **Dynamic Cursor Shapes**: Neovim automatically toggles between Solid Block `█` (Normal) and Thin Beam `│` (Insert) inside tmux.
+- 📊 **Single Status Bar**: `vim-tpipeline` embeds Neovim status into tmux and restores the tmux bar cleanly on exit.
