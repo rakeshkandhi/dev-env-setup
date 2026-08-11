@@ -1,11 +1,12 @@
 [general]
 working_directory = "/Users/rakeshkandhi/code/personal/"
 [window]
-padding = { x=5,y=0}
+padding = { x = 2, y = 2 }
 dimensions = { columns = 120, lines = 35 }
 opacity = 0.9
 blur = true
 dynamic_title = true
+option_as_alt = "Both"
 
 [scrolling]
 multiplier = 1

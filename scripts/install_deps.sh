@@ -60,14 +60,11 @@ install_homebrew() {
 install_with_brew() {
     install_homebrew
 
-    _info "Updating Homebrew …"
-    brew update --quiet
-
     local pkgs=("${COMMON_PKGS[@]}" "${BREW_EXTRAS[@]}")
     local to_install=()
 
     for pkg in "${pkgs[@]}"; do
-        if brew list --formula "${pkg}" &>/dev/null || is_installed "${pkg}"; then
+        if is_installed "${pkg}" || brew list --formula "${pkg}" &>/dev/null; then
             _ok "${pkg} — already installed"
         else
             to_install+=("${pkg}")
@@ -78,6 +75,9 @@ install_with_brew() {
         _ok "All Homebrew packages already installed"
         return 0
     fi
+
+    _info "Updating Homebrew …"
+    brew update --quiet
 
     _info "Installing: ${to_install[*]}"
     brew install "${to_install[@]}"
