@@ -87,17 +87,17 @@ The install script performs the following in order:
 | **OS Detection** | Auto-detects macOS or Linux distro (Ubuntu/Debian, Fedora, Arch) and selects the correct package manager |
 | **Dependencies** | Installs core tools via `brew` / `apt` / `dnf` / `pacman`: Neovim, tmux, ripgrep, fd, lazygit, and more |
 | **Fonts** | Downloads and installs **MesloLGS Nerd Font** from the [nerd-fonts](https://github.com/ryanoasis/nerd-fonts) releases |
-| **Neovim** | Clones [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) to `~/.config/nvim` — Lazy.nvim auto-installs all plugins on first launch |
-| **tmux** | Symlinks tmux config to `~/.config/tmux/` and installs [TPM](https://github.com/tmux-plugins/tpm) (Tmux Plugin Manager) |
+| **Neovim** | Clones [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) to `~/.config/nvim` (with HTTPS fallback) — Lazy.nvim auto-installs all plugins on first launch |
+| **tmux** | Symlinks tmux config to `~/.config/tmux/`, installs TPM, and auto-installs plugins non-interactively |
 | **Alacritty** | Symlinks Alacritty config to `~/.config/alacritty/` |
+| **Shell** | Configures `EDITOR=nvim`, `VISUAL=nvim`, `alias v=nvim`, and `alias t=tmux` in `~/.zshrc` / `~/.bashrc` |
 
 ### 4. Post-install steps
 
 After the script completes:
 
-1. **Restart your terminal** (or open a new Alacritty window)
-2. **Install tmux plugins** — open tmux and press `Ctrl-a + I` (capital I)
-3. **Open Neovim** — plugins auto-install via Lazy.nvim on first launch
+1. **Restart your terminal** (or source your shell rc file)
+2. **Open Neovim** — plugins auto-install via Lazy.nvim on first launch
 
 ---
 
@@ -123,15 +123,14 @@ cd /path/to/dev-env-setup
 | :--- | :--- |
 | **Self-update** | Pulls the latest changes for this repo (`git pull`) |
 | **Neovim config** | Pulls the latest Neovim config (`git pull` in `~/.config/nvim`) |
-| **TPM** | Updates the Tmux Plugin Manager (`git pull`) |
+| **TPM & Plugins** | Updates TPM and auto-updates tmux plugins via `update_plugins all` |
 | **Symlinks** | Re-verifies symlinks for tmux and Alacritty configs |
-| **Dependencies** | Updates dependencies if needed |
+| **Shell & Deps** | Re-applies shell aliases and updates dependencies if needed |
 
 ### 4. Post-update steps
 
 1. **Reload tmux config** — press `prefix + r` or restart tmux
-2. **Update tmux plugins** — press `prefix + U` (capital U)
-3. **Open Neovim** — Lazy.nvim will show if plugins need updating (`:Lazy update`)
+2. **Open Neovim** — Lazy.nvim will show if plugins need updating (`:Lazy update`)
 
 ---
 
@@ -144,11 +143,18 @@ Don't need everything? Target specific components:
 ./install.sh --only nvim       # Only setup Neovim
 ./install.sh --only tmux       # Only setup tmux
 ./install.sh --only alacritty  # Only setup Alacritty
+./install.sh --only shell      # Only setup shell environment & aliases
 ./install.sh --only fonts      # Only install fonts
 ./install.sh --only deps       # Only install dependencies
 
 # Skip dependency installation
 ./install.sh --no-deps
+
+# Exclude Alacritty installation and config porting
+./install.sh --no-alacritty   # (aliases: --skip-alacritty, --exclude-alacritty)
+
+# Exclude shell environment & aliases setup
+./install.sh --no-shell       # (aliases: --skip-shell, --exclude-shell)
 
 # Preview what would happen without making changes
 ./install.sh --dry-run
@@ -156,6 +162,8 @@ Don't need everything? Target specific components:
 # Update only a specific component
 ./install.sh update --only nvim   # Update only Neovim config
 ```
+
+> **Note on Alacritty**: If the Alacritty configuration is missing during installation and `--no-alacritty` is not passed, the installer will interactively prompt whether to **(s)kip** or **(i)nstall** Alacritty configuration and binary.
 
 ---
 

@@ -24,7 +24,8 @@ _err()   { printf '\033[1;31m[ ERR]\033[0m  %s\n' "$*"; }
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-NVIM_REPO="git@github.com:rakeshkandhi/nvim.git"
+NVIM_REPO_SSH="git@github.com:rakeshkandhi/nvim.git"
+NVIM_REPO_HTTPS="https://github.com/rakeshkandhi/nvim.git"
 NVIM_CONFIG_DIR="${HOME}/.config/nvim"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 
@@ -38,10 +39,13 @@ get_remote_url() {
     git -C "${dir}" remote get-url origin 2>/dev/null || echo ""
 }
 
-# Normalise git URLs for comparison (strip .git suffix, lowercase)
+# Normalise git URLs for comparison (strip protocol prefix, .git suffix, lowercase)
 normalise_url() {
     local url="$1"
     url="${url%.git}"
+    url="${url#git@github.com:}"
+    url="${url#https://github.com/}"
+    url="${url#http://github.com/}"
     echo "${url}" | tr '[:upper:]' '[:lower:]'
 }
 
@@ -67,7 +71,7 @@ main() {
             local current_remote
             current_remote="$(get_remote_url "${NVIM_CONFIG_DIR}")"
 
-            if [[ "$(normalise_url "${current_remote}")" == "$(normalise_url "${NVIM_REPO}")" ]]; then
+            if [[ "$(normalise_url "${current_remote}")" == "$(normalise_url "${NVIM_REPO_SSH}")" ]]; then
                 _info "Existing nvim config points to the correct repo — pulling latest …"
                 git -C "${NVIM_CONFIG_DIR}" pull --rebase --quiet
                 _ok "Neovim config updated (git pull)"
@@ -82,9 +86,18 @@ main() {
         fi
     fi
 
-    _info "Cloning ${NVIM_REPO} → ${NVIM_CONFIG_DIR} …"
-    git clone "${NVIM_REPO}" "${NVIM_CONFIG_DIR}"
-    _ok "Neovim configuration installed"
+    _info "Cloning Neovim configuration → ${NVIM_CONFIG_DIR} …"
+    if git clone "${NVIM_REPO_SSH}" "${NVIM_CONFIG_DIR}" 2>/dev/null; then
+        _ok "Neovim configuration installed (via SSH)"
+    else
+        _warn "SSH clone failed (git@github.com:rakeshkandhi/nvim.git). Falling back to HTTPS …"
+        if git clone "${NVIM_REPO_HTTPS}" "${NVIM_CONFIG_DIR}"; then
+            _ok "Neovim configuration installed (via HTTPS fallback)"
+        else
+            _err "Failed to clone Neovim repository via SSH or HTTPS"
+            return 1
+        fi
+    fi
 }
 
 main "$@"

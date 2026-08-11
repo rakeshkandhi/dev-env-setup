@@ -89,8 +89,12 @@ Commands:
 
 Options:
   --only <step>    Run only a specific step. Valid steps:
-                     deps, fonts, nvim, tmux, alacritty
+                     deps, fonts, nvim, tmux, alacritty, shell
   --no-deps        Skip dependency installation
+  --no-alacritty   Skip Alacritty setup & settings porting
+                     (aliases: --skip-alacritty, --exclude-alacritty)
+  --no-shell       Skip shell environment & aliases setup
+                     (aliases: --skip-shell, --exclude-shell)
   --dry-run        Show what would be done without executing
   --help, -h       Show this help message
 
@@ -99,8 +103,10 @@ Examples:
   $(basename "$0") update           # Self-update repo, re-run all steps
   $(basename "$0") update --only nvim  # Self-update, then only Neovim
   $(basename "$0") --only nvim      # Only setup Neovim
-  $(basename "$0") --only fonts     # Only install fonts
+  $(basename "$0") --only shell     # Only setup shell environment & aliases
   $(basename "$0") --no-deps        # Skip deps, do everything else
+  $(basename "$0") --no-alacritty   # Skip Alacritty setup & config porting
+  $(basename "$0") --no-shell       # Skip shell setup
   $(basename "$0") --dry-run        # Preview what will happen
 EOF
 }
@@ -110,6 +116,8 @@ EOF
 # ---------------------------------------------------------------------------
 ONLY_STEP=""
 SKIP_DEPS=false
+SKIP_ALACRITTY=false
+SKIP_SHELL=false
 DRY_RUN=false
 UPDATE_MODE=false
 
@@ -123,7 +131,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --only)
             if [[ -z "${2:-}" ]]; then
-                _err "--only requires a step name (deps|fonts|nvim|tmux|alacritty)"
+                _err "--only requires a step name (deps|fonts|nvim|tmux|alacritty|shell)"
                 exit 1
             fi
             ONLY_STEP="$2"
@@ -131,6 +139,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-deps)
             SKIP_DEPS=true
+            shift
+            ;;
+        --no-alacritty|--skip-alacritty|--exclude-alacritty)
+            SKIP_ALACRITTY=true
+            shift
+            ;;
+        --no-shell|--skip-shell|--exclude-shell)
+            SKIP_SHELL=true
             shift
             ;;
         --dry-run)
@@ -149,20 +165,22 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+export SKIP_ALACRITTY SKIP_SHELL UPDATE_MODE
+
 # Validate --only step
 if [[ -n "${ONLY_STEP}" ]]; then
     case "${ONLY_STEP}" in
-        deps|fonts|nvim|tmux|alacritty) ;;
+        deps|fonts|nvim|tmux|alacritty|shell) ;;
         *)
             _err "Invalid step: ${ONLY_STEP}"
-            _err "Valid steps: deps, fonts, nvim, tmux, alacritty"
+            _err "Valid steps: deps, fonts, nvim, tmux, alacritty, shell"
             exit 1
             ;;
     esac
 fi
 
 # ---------------------------------------------------------------------------
-# Should-run helper (respects --only and --no-deps)
+# Should-run helper (respects --only, --no-deps, --no-alacritty, --no-shell)
 # ---------------------------------------------------------------------------
 should_run() {
     local step="$1"
@@ -173,6 +191,14 @@ should_run() {
     fi
 
     if [[ "${step}" == "deps" && "${SKIP_DEPS}" == true ]]; then
+        return 1
+    fi
+
+    if [[ "${step}" == "alacritty" && "${SKIP_ALACRITTY}" == true ]]; then
+        return 1
+    fi
+
+    if [[ "${step}" == "shell" && "${SKIP_SHELL}" == true ]]; then
         return 1
     fi
 
@@ -245,12 +271,13 @@ main() {
         export OS_TYPE LINUX_DISTRO PKG_MANAGER
     fi
 
-    # Steps 1–5
+    # Steps 1–6
     run_step "deps"      "${SCRIPTS}/install_deps.sh"      "Install Dependencies"
     run_step "fonts"     "${SCRIPTS}/install_fonts.sh"      "Install MesloLGS Nerd Font"
     run_step "nvim"      "${SCRIPTS}/setup_nvim.sh"         "Setup Neovim Config"
     run_step "tmux"      "${SCRIPTS}/setup_tmux.sh"         "Setup tmux Config & TPM"
     run_step "alacritty" "${SCRIPTS}/setup_alacritty.sh"    "Setup Alacritty Config"
+    run_step "shell"     "${SCRIPTS}/setup_shell.sh"        "Setup Shell Environment & Aliases"
 
     # ------------------------------------------------------------------
     # Summary

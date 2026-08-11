@@ -98,6 +98,11 @@ main() {
         _info "Updating TPM …"
         git -C "${TPM_DIR}" pull --rebase --quiet
         _ok "TPM updated"
+        if [[ "${UPDATE_MODE:-false}" == true && -f "${TPM_DIR}/bin/update_plugins" ]]; then
+            _info "Updating tmux plugins via TPM …"
+            "${TPM_DIR}/bin/update_plugins" all || true
+            _ok "tmux plugins updated"
+        fi
     else
         if [[ -d "${TPM_DIR}" ]]; then
             _warn "TPM directory exists but is not a git repo — backing up"
@@ -109,8 +114,13 @@ main() {
         _ok "TPM installed"
     fi
 
-    echo ""
-    _info "After starting tmux, press  prefix + I  to install plugins via TPM"
+    # 5. Auto-install plugins non-interactively via TPM
+    if [[ -f "${TPM_DIR}/bin/install_plugins" ]]; then
+        _info "Installing tmux plugins non-interactively via TPM …"
+        "${TPM_DIR}/bin/install_plugins" || true
+        _ok "tmux plugins installed"
+    fi
+
     _ok "tmux setup complete"
 }
 
