@@ -31,6 +31,7 @@ What makes them feel like **one tool**:
 - 📊 **Unified Status Bar** — [vim-tpipeline](https://github.com/vimpostor/vim-tpipeline) merges Neovim's lualine into tmux's status bar
 - 🧭 **Seamless Navigation** — [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) lets `Ctrl-h/j/k/l` move across tmux panes _and_ Neovim splits
 - 📋 **Shared Clipboard** — yank in Neovim or tmux copy mode → system clipboard
+- ⌨️ **[Shortcut Guide](SHORTCUTS.md)** — complete cheat sheet for tmux & Neovim keybindings
 
 ---
 
