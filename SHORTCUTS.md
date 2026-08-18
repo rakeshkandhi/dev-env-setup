@@ -165,7 +165,44 @@ Both tmux and Neovim are configured to share your OS system clipboard (**macOS `
 
 ---
 
-## 🔌 6. TPM (Tmux Plugin Manager) Commands
+## 🔍 6. fzf — Fuzzy Finder (shell)
+
+Wired up by `setup_shell.sh` via `eval "$(fzf --zsh)"` / `eval "$(fzf --bash)"`.
+
+### Key bindings (everywhere in the shell)
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl-T` | Fuzzy-find **files** (preview on the right) and paste onto the command line |
+| `Ctrl-R` | Fuzzy-search **command history** |
+| `Alt-C` | Fuzzy-find a **directory** and `cd` into it |
+
+### Tab completion (`**`)
+
+Type `**` then `Tab` after a command:
+
+| Example | Action |
+|---|---|
+| `cd **<Tab>` | Fuzzy-complete a directory, then cd |
+| `kill **<Tab>` | Fuzzy-pick a process, then kill it |
+| `nvim **<Tab>` / `v **<Tab>` | Fuzzy-complete a file, then open in Neovim |
+
+### Commands / aliases
+
+| Command | Action |
+|---|---|
+| `vf` | Fuzzy-find file(s) with preview → open in Neovim (`nvim $(fzf --preview …)`) |
+| `vf <query>` | Same, but start fzf filtered by `<query>` |
+| `fcd` | Fuzzy-find a directory and `cd` into it |
+| `fcd <path>` | Same, searching under `<path>` |
+| `fkill` | Fuzzy-pick process(es) and `kill -9` |
+| `fkill 15` | Same, but send SIGTERM (`kill -15`) |
+
+> **Multi-select**: in `vf` and `fkill`, use `Tab` to mark multiple items, then `Enter`.
+
+---
+
+## 🔌 7. TPM (Tmux Plugin Manager) Commands
 
 Inside tmux:
 
@@ -178,7 +215,7 @@ Inside tmux:
 
 ---
 
-## 🚀 7. Config Optimizations Included
+## 🚀 8. Config Optimizations Included
 
 - 🟢 **macOS Option Key Support**: `option_as_alt = "Both"` in Alacritty enables native `Alt+j`/`Alt+k` line shifting on Mac.
 - 🏷️ **Dynamic Folder Titles**: tmux tabs auto-rename to your current directory name.

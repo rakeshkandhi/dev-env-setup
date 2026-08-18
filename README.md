@@ -32,6 +32,7 @@ What makes them feel like **one tool**:
 - 🧭 **Seamless Navigation** — [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) lets `Ctrl-h/j/k/l` move across tmux panes _and_ Neovim splits
 - 📋 **Shared Clipboard** — yank in Neovim or tmux copy mode → system clipboard
 - ⌨️ **[Shortcut Guide](SHORTCUTS.md)** — complete cheat sheet for tmux & Neovim keybindings
+- 🔌 **[Extension & Plugin Architecture Guide](EXTENSIONS.md)** — detailed breakdown of installed Tmux & Neovim extensions, workflow benefits, and efficiency gains
 
 ---
 
@@ -90,7 +91,8 @@ The install script performs the following in order:
 | **Neovim** | Clones [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) to `~/.config/nvim` (with HTTPS fallback) — Lazy.nvim auto-installs all plugins on first launch |
 | **tmux** | Symlinks tmux config to `~/.config/tmux/`, installs TPM, and auto-installs plugins non-interactively |
 | **Alacritty** | Symlinks Alacritty config to `~/.config/alacritty/` |
-| **Shell** | Configures `EDITOR=nvim`, `VISUAL=nvim`, `alias v=nvim`, and `alias t=tmux` in `~/.zshrc` / `~/.bashrc` |
+| **Starship** | Installs **Starship prompt** (Linux only) and symlinks Catppuccin Mocha theme to `~/.config/starship.toml` |
+| **Shell** | Configures `EDITOR=nvim`, aliases (`v`, `t`), and full **fzf** integration (`eval`, `vf` / `fcd` / `fkill`, `cd **` / `kill **` completion) in `~/.zshrc` / `~/.bashrc` |
 
 ### 4. Post-install steps
 
@@ -237,6 +239,19 @@ A consistent color palette across all three tools:
 | `Shift-H` | Previous window |
 | `Shift-L` | Next window |
 
+### fzf — shell fuzzy finder
+
+| Key / Command | Action |
+| :--- | :--- |
+| `Ctrl-T` | Fuzzy-find files (with preview) |
+| `Ctrl-R` | Fuzzy-search command history |
+| `Alt-C` | Fuzzy-find a directory and `cd` |
+| `cd **<Tab>` | Fuzzy-complete a directory |
+| `kill **<Tab>` | Fuzzy-pick a process to kill |
+| `vf` | Fuzzy-find file(s) → open in Neovim |
+| `fcd` | Fuzzy-find a directory and `cd` |
+| `fkill` | Fuzzy-pick process(es) and kill |
+
 ### Neovim — leader: `Space`
 
 | Key | Action |
@@ -264,6 +279,8 @@ dev-env-setup/
 ├── LICENSE
 ├── alacritty/
 │   └── alacritty.toml      # Alacritty configuration
+├── starship/
+│   └── starship.toml       # Catppuccin Mocha prompt theme (Linux)
 ├── tmux/
 │   ├── tmux.conf           # tmux configuration
 │   └── themes/
@@ -274,7 +291,9 @@ dev-env-setup/
     ├── install_fonts.sh    # MesloLGS Nerd Font installer
     ├── setup_nvim.sh       # Neovim config setup
     ├── setup_tmux.sh       # tmux config & TPM setup
-    └── setup_alacritty.sh  # Alacritty config setup
+    ├── setup_alacritty.sh  # Alacritty config setup
+    ├── setup_starship.sh   # Starship prompt installer (Linux)
+    └── setup_shell.sh      # Shell env, aliases, fzf integration
 ```
 
 ---
@@ -286,6 +305,7 @@ dev-env-setup/
 | Alacritty | `~/.config/alacritty/` | Symlink → this repo's `alacritty/` |
 | tmux | `~/.config/tmux/` | Symlink → this repo's `tmux/` |
 | Neovim | `~/.config/nvim/` | Git clone from [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) |
+| Starship | `~/.config/starship.toml` | Symlink → this repo's `starship/starship.toml` (Linux) |
 
 > **Why symlinks?** Editing configs in the repo automatically updates the live config. No copying, no drift.
 

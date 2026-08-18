@@ -6,6 +6,10 @@
 #   OS_TYPE       — "macos" | "linux"
 #   LINUX_DISTRO  — "ubuntu" | "debian" | "fedora" | "arch" | "unknown" (linux only)
 #   PKG_MANAGER   — "brew" | "apt" | "dnf" | "pacman"
+#
+# Ubuntu-based (Mint, Pop!_OS, Elementary, Zorin, …) is detected via ID or
+# ID_LIKE and reported as LINUX_DISTRO=ubuntu. Debian-based (not Ubuntu)
+# is reported as debian. Both use apt.
 # ==============================================================================
 
 # Guard: allow sourcing without blowing up the caller
@@ -24,6 +28,13 @@ if ! declare -f _info &>/dev/null; then
     _err()   { printf '\033[1;31m[ ERR]\033[0m  %s\n' "$*"; }
 fi
 
+# True if space-separated list $2 contains word $1
+_id_like_has() {
+    local needle="$1"
+    local haystack=" $2 "
+    [[ "${haystack}" == *" ${needle} "* ]]
+}
+
 # ---------------------------------------------------------------------------
 # Detect OS
 # ---------------------------------------------------------------------------
@@ -40,24 +51,59 @@ detect_os() {
         Linux)
             OS_TYPE="linux"
             LINUX_DISTRO="unknown"
+            PKG_MANAGER="unknown"
 
             if [[ -f /etc/os-release ]]; then
                 # shellcheck disable=SC1091
                 source /etc/os-release
-                case "${ID:-}" in
-                    ubuntu)         LINUX_DISTRO="ubuntu";  PKG_MANAGER="apt" ;;
-                    debian)         LINUX_DISTRO="debian";  PKG_MANAGER="apt" ;;
-                    fedora)         LINUX_DISTRO="fedora";  PKG_MANAGER="dnf" ;;
-                    arch|manjaro)   LINUX_DISTRO="arch";    PKG_MANAGER="pacman" ;;
+                local distro_id="${ID:-}"
+                local distro_like="${ID_LIKE:-}"
+
+                case "${distro_id}" in
+                    ubuntu|pop|linuxmint|elementary|zorin|neon|kubuntu|xubuntu|lubuntu)
+                        LINUX_DISTRO="ubuntu"
+                        PKG_MANAGER="apt"
+                        ;;
+                    debian|raspbian)
+                        LINUX_DISTRO="debian"
+                        PKG_MANAGER="apt"
+                        ;;
+                    fedora)
+                        LINUX_DISTRO="fedora"
+                        PKG_MANAGER="dnf"
+                        ;;
+                    arch|manjaro|endeavouros)
+                        LINUX_DISTRO="arch"
+                        PKG_MANAGER="pacman"
+                        ;;
                     *)
-                        # Fallback: try to find a known package manager
-                        if command -v apt &>/dev/null;    then PKG_MANAGER="apt"
-                        elif command -v dnf &>/dev/null;  then PKG_MANAGER="dnf"
-                        elif command -v pacman &>/dev/null; then PKG_MANAGER="pacman"
-                        else PKG_MANAGER="unknown"
+                        # Derivatives: prefer ubuntu over debian when both appear
+                        # (Pop!_OS, Mint, etc. set ID_LIKE="ubuntu debian")
+                        if _id_like_has "ubuntu" "${distro_like}"; then
+                            LINUX_DISTRO="ubuntu"
+                            PKG_MANAGER="apt"
+                        elif _id_like_has "debian" "${distro_like}"; then
+                            LINUX_DISTRO="debian"
+                            PKG_MANAGER="apt"
+                        elif _id_like_has "fedora" "${distro_like}"; then
+                            LINUX_DISTRO="fedora"
+                            PKG_MANAGER="dnf"
+                        elif _id_like_has "arch" "${distro_like}"; then
+                            LINUX_DISTRO="arch"
+                            PKG_MANAGER="pacman"
                         fi
                         ;;
                 esac
+            fi
+
+            if [[ "${PKG_MANAGER}" == "unknown" ]]; then
+                if command -v apt &>/dev/null; then
+                    PKG_MANAGER="apt"
+                elif command -v dnf &>/dev/null; then
+                    PKG_MANAGER="dnf"
+                elif command -v pacman &>/dev/null; then
+                    PKG_MANAGER="pacman"
+                fi
             fi
             ;;
         *)
