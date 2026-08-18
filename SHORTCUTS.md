@@ -49,6 +49,7 @@ When running inside tmux (with or without Neovim open):
 | Shortcut | Action |
 |---|---|
 | `Ctrl-a c` | **Create** a new window (opens in current working directory) |
+| `Ctrl-a f` | **Tmux Sessionizer**: Fuzzy-find project folder & switch/create session |
 | `Ctrl-a ,` | **Rename** current window |
 | `Ctrl-a 1` .. `9` | **Switch directly** to window 1–9 |
 | `Ctrl-a n` / `Ctrl-a p` | Switch to **Next / Previous** window |
@@ -191,6 +192,7 @@ Type `**` then `Tab` after a command:
 
 | Command | Action |
 |---|---|
+| `ta` | **Tmux Sessionizer**: Fuzzy-find project folder → switch/create session |
 | `vf` | Fuzzy-find file(s) with preview → open in Neovim (`nvim $(fzf --preview …)`) |
 | `vf <query>` | Same, but start fzf filtered by `<query>` |
 | `fcd` | Fuzzy-find a directory and `cd` into it |

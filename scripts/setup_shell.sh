@@ -165,19 +165,6 @@ EOF
 build_config_block() {
     local sh="$1"
 
-    local path_block=""
-    if [[ "${OS_TYPE}" == "linux" ]]; then
-        path_block="$(cat << 'EOF'
-# User-local binaries (starship official installer, pip, etc.)
-case ":${PATH}:" in
-  *:"${HOME}/.local/bin":*) ;;
-  *) export PATH="${HOME}/.local/bin:${PATH}" ;;
-esac
-
-EOF
-)"
-    fi
-
     local fzf_block
     fzf_block="$(fzf_integration_block "${sh}")"
 
@@ -189,10 +176,17 @@ EOF
 
     cat << EOF
 # >>> dev-env-setup >>>
-${path_block}export EDITOR="nvim"
+# User-local binaries (~/.local/bin)
+case ":\${PATH}:" in
+  *:"\${HOME}/.local/bin":*) ;;
+  *) export PATH="\${HOME}/.local/bin:\${PATH}" ;;
+esac
+
+export EDITOR="nvim"
 export VISUAL="nvim"
 alias v="nvim"
 alias t="tmux"
+alias ta="tmux-sessionizer"
 
 # Ubuntu/Debian ships the fd binary as fdfind
 if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then

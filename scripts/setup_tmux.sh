@@ -92,6 +92,13 @@ main() {
     # 3. Legacy ~/.tmux.conf symlink (points to the XDG config)
     safe_symlink "${TMUX_CONFIG_DIR}/tmux.conf" "${TMUX_LEGACY}"
 
+    # 4. Install tmux-sessionizer helper to ~/.local/bin
+    mkdir -p "${HOME}/.local/bin"
+    if [[ -f "${SCRIPT_DIR}/tmux_sessionizer.sh" ]]; then
+        chmod +x "${SCRIPT_DIR}/tmux_sessionizer.sh"
+        safe_symlink "${SCRIPT_DIR}/tmux_sessionizer.sh" "${HOME}/.local/bin/tmux-sessionizer"
+    fi
+
     # 4. Install TPM
     if [[ -d "${TPM_DIR}/.git" ]]; then
         _ok "TPM already installed at ${TPM_DIR}"

@@ -293,7 +293,8 @@ dev-env-setup/
     ├── setup_tmux.sh       # tmux config & TPM setup
     ├── setup_alacritty.sh  # Alacritty config setup
     ├── setup_starship.sh   # Starship prompt installer (Linux)
-    └── setup_shell.sh      # Shell env, aliases, fzf integration
+    ├── setup_shell.sh      # Shell env, aliases, fzf integration
+    └── tmux_sessionizer.sh # Fuzzy project & session switcher helper (`ta` / `Ctrl-a f`)
 ```
 
 ---

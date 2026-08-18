@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Master Installer (`install.sh`) Integration**: Fully integrated `starship` into `install.sh` with `--only starship`, `--no-starship`, and `--skip-starship` support.
 - **Changelog & Version Logging**: Created `CHANGELOG.md` to track repository release history, changes, and timestamps.
 - **Extension & Plugin Architecture Guide**: Created [`EXTENSIONS.md`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/EXTENSIONS.md) documenting all installed Tmux & Neovim plugins, workflow benefits, and inter-tool efficiency synergies.
+- **Tmux Sessionizer Workflow Utility**: Added [`scripts/tmux_sessionizer.sh`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/scripts/tmux_sessionizer.sh) (`ta` shell alias & `Ctrl-a f` in tmux) for zero-keystroke fuzzy switching between project sessions.
 
 ### Changed
 - **Linux Distribution Detection (`scripts/detect_os.sh`)**: Enhanced Linux distro resolution to auto-detect Ubuntu derivatives (Pop!_OS, Linux Mint, Elementary OS, Zorin OS, KDE Neon, etc.) via `/etc/os-release` `ID` and `ID_LIKE` scanning.
