@@ -1,225 +1,267 @@
-# ⌨️ Neovim + tmux Cheat Sheet & Shortcuts Guide
+# ⌨️ Neovim + tmux Shortcuts & Reference Guide
 
-This guide covers all keybindings for your unified **Alacritty + tmux + Neovim** setup.
+Complete keybinding reference for the **Alacritty + tmux + Neovim + fzf** setup.
 
----
-
-## 🎯 Master Controls
-
-| Core Concept | Binding | Description |
-|---|---|---|
-| **tmux Prefix** | `Ctrl-a` | Remapped from `Ctrl-b` for easy one-hand access |
-| **Neovim Leader** | `Space` | Spacebar is the leader key for commands |
+| Tool | Master Key |
+| :--- | :--- |
+| **tmux Prefix** | `Ctrl-a` _(remapped from Ctrl-b)_ |
+| **Neovim Leader** | `Space` |
 
 ---
 
-## 🔄 1. Seamless Pane Navigation (tmux ↔ Neovim)
+## 🔄 1. Seamless Navigation (tmux ↔ Neovim)
 
-You do **not** need to use different shortcuts whether you are in tmux or inside Neovim. The keys below automatically switch between tmux panes AND Neovim split windows seamlessly.
-
-| Shortcut | Action | Scope |
-|---|---|---|
-| `Ctrl-h` | Move focus **Left** | tmux pane or Neovim split |
-| `Ctrl-j` | Move focus **Down** | tmux pane or Neovim split |
-| `Ctrl-k` | Move focus **Up** | tmux pane or Neovim split |
-| `Ctrl-l` | Move focus **Right** | tmux pane or Neovim split |
-
----
-
-## 🖥️ 2. tmux Session & Detach Controls
-
-### Detaching & Re-attaching
-When running inside tmux (with or without Neovim open):
-
-| Shortcut / Command | Action |
-|---|---|
-| `Ctrl-a d` | **Detach from tmux session** (leaves Neovim & terminal jobs running in background) |
-| `tmux a` or `tmux attach` | **Re-attach** to your last active tmux session |
-| `tmux a -t <name>` | **Re-attach** to a specific named session |
-| `tmux ls` | List all running tmux background sessions |
-| `tmux new -s <name>` | Create a new named session |
-| `tmux kill-session -t <name>` | Kill a background session |
-
----
-
-## 🪟 3. tmux Window & Pane Management
-
-### Managing Windows (Tabs inside tmux)
+The same keys work identically in tmux panes **and** Neovim splits — no mode switching needed.
 
 | Shortcut | Action |
-|---|---|
-| `Ctrl-a c` | **Create** a new window (opens in current working directory) |
-| `Ctrl-a f` | **Tmux Sessionizer**: Fuzzy-find project folder & switch/create session |
+| :--- | :--- |
+| `Ctrl-h` | Move focus **Left** |
+| `Ctrl-j` | Move focus **Down** |
+| `Ctrl-k` | Move focus **Up** |
+| `Ctrl-l` | Move focus **Right** |
+
+---
+
+## 🖥️ 2. tmux Sessions
+
+### Detach & Re-attach
+
+| Shortcut / Command | Action |
+| :--- | :--- |
+| `Ctrl-a d` | **Detach** from tmux (leaves all processes running in background) |
+| `tmux a` | **Re-attach** to last active session |
+| `tmux a -t <name>` | Re-attach to a **specific named** session |
+| `tmux ls` | **List** all running background sessions |
+| `tmux new -s <name>` | Create a new named session |
+| `tmux kill-session -t <name>` | Kill a specific session |
+
+### Session State (tmux-resurrect)
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl-a Ctrl-s` | **Save** full session layout & pane state |
+| `Ctrl-a Ctrl-r` | **Restore** saved session layout on startup |
+
+> 💡 `tmux-continuum` auto-saves every 15 minutes and auto-restores on tmux start.
+
+---
+
+## 🪟 3. tmux Windows & Panes
+
+### Windows (Tabs)
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl-a f` | **Tmux Sessionizer** — fuzzy-find project folder & switch/create session |
+| `Ctrl-a c` | **Create** new window (opens in current working directory) |
 | `Ctrl-a ,` | **Rename** current window |
-| `Ctrl-a 1` .. `9` | **Switch directly** to window 1–9 |
+| `Ctrl-a 1` .. `9` | **Jump** directly to window 1–9 |
 | `Ctrl-a n` / `Ctrl-a p` | Switch to **Next / Previous** window |
 | `Ctrl-a &` | **Close** current window |
 
-> 💡 **Auto Folder Naming**: Windows are automatically titled after your current project directory name (e.g. `dev-env-setup`, `nvim`, `api`).
+> 💡 Windows auto-rename to your current directory name (e.g. `dev-env-setup`, `nvim`, `api`).
 
-### Managing Panes (Splits inside tmux)
+### Panes (Splits)
 
 | Shortcut | Action |
-|---|---|
-| `Ctrl-a \` | **Split Vertically** (Left / Right) in current path |
-| `Ctrl-a -` | **Split Horizontally** (Top / Bottom) in current path |
-| `Ctrl-a z` | **Toggle Zoom** (Maximize active pane fullscreen / restore) |
+| :--- | :--- |
+| `Ctrl-a \` | **Split Vertically** (Left / Right) — opens in current path |
+| `Ctrl-a -` | **Split Horizontally** (Top / Bottom) — opens in current path |
+| `Ctrl-a z` | **Toggle Zoom** — maximise active pane / restore |
 | `Ctrl-a x` | **Close / Kill** active pane |
-| `Ctrl-a H` | Resize pane 5 units **Left** |
-| `Ctrl-a J` | Resize pane 5 units **Down** |
-| `Ctrl-a K` | Resize pane 5 units **Up** |
-| `Ctrl-a L` | Resize pane 5 units **Right** |
+| `Ctrl-a H` | Resize pane **Left** by 5 units |
+| `Ctrl-a J` | Resize pane **Down** by 5 units |
+| `Ctrl-a K` | Resize pane **Up** by 5 units |
+| `Ctrl-a L` | Resize pane **Right** by 5 units |
+
+### TPM Plugin Management
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl-a I` | **Install** new plugins listed in `tmux.conf` |
+| `Ctrl-a U` | **Update** existing tmux plugins |
+| `Ctrl-a Alt-u` | **Remove** / clean unlisted plugins |
+| `Ctrl-a r` | **Reload** `tmux.conf` in place |
 
 ---
 
-## 📋 4. Copy Mode & Clipboard (tmux & Neovim)
+## 📋 4. Copy Mode & Clipboard
 
-Both tmux and Neovim are configured to share your OS system clipboard (**macOS `pbcopy` / Linux `xclip`**).
+Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / `xclip` on Linux).
 
-### tmux Copy Mode (Vim style)
+### tmux Copy Mode (Vi-style)
 
 | Shortcut | Action |
-|---|---|
+| :--- | :--- |
 | `Ctrl-a [` | **Enter Copy Mode** |
-| `h` / `j` / `k` / `l` | Move cursor in copy mode |
+| `h` / `j` / `k` / `l` | Move cursor |
 | `w` / `b` | Move word forward / backward |
 | `0` / `$` | Jump to start / end of line |
 | `/` | Search forward in scrollback |
 | `v` | Start **Visual Selection** |
-| `y` | **Yank selection** to system clipboard & exit copy mode |
-| `Mouse Drag` | Drag select text to automatically yank to system clipboard |
+| `y` | **Yank** selection → system clipboard & exit |
+| `Mouse Drag` | Auto-yank drag selection to system clipboard |
 | `Ctrl-a ]` | Paste from tmux copy buffer |
-| `Cmd + V` (Mac) / `Ctrl+Shift+V` (Linux) | Paste anywhere from system clipboard |
+| `Cmd+V` (Mac) / `Ctrl+Shift+V` (Linux) | Paste from system clipboard anywhere |
 
 ### Neovim Clipboard
 
-- Any yank in Neovim (`y`, `yy`, `yiw`, etc.) automatically goes to your **system clipboard** (`clipboard = "unnamedplus"`).
-- You can paste into Neovim with `p` / `P` from system clipboard.
+- Any yank (`y`, `yy`, `yiw`, `V y`, etc.) automatically lands in the **system clipboard** (`clipboard = "unnamedplus"`).
+- Paste into Neovim with `p` / `P` directly from system clipboard.
 
 ---
 
 ## ⚡ 5. Neovim Keybindings (Leader = `Space`)
 
-### Telescope Fuzzy Finder
+### 🔭 Telescope — Fuzzy Finder
 
 | Shortcut | Action |
-|---|---|
-| `Space ff` | Find Files in project |
-| `Space fg` | Live Grep search across text |
-| `Space fb` | Search active Buffers |
-| `Space fh` | Search Help tags |
-| `Space fk` | Search all Keymaps |
-| `Space fc` | Search Neovim Commands |
-| `Space fw` | Grep for word under cursor |
+| :--- | :--- |
+| `Space ff` | **Find Files** in project (respects `.gitignore`, hides `node_modules` etc.) |
+| `Space fg` | **Live Grep** — search text across all project files |
+| `Space fw` | **Grep word** under cursor across project |
+| `Space fb` | **Search Buffers** — switch between open files |
+| `Space fd` | **Diagnostics** — list all LSP errors/warnings |
+| `Space fs` | **Document Symbols** — list functions/vars in current file |
+| `Space fS` | **Workspace Symbols** — list symbols across entire project |
+| `Space fh` | **Help Tags** — search Neovim documentation |
+| `Space fk` | **Keymaps** — search all active keybindings |
+| `Space fc` | **Commands** — search Neovim commands |
 
-### Buffer Navigation (Top Tab Bar)
+> 💡 Inside Telescope file picker: press `Ctrl-y` (Insert) or `y` (Normal) to copy the file path to clipboard.
+
+### 📂 Buffer Navigation (Top Tab Bar)
 
 | Shortcut | Action |
-|---|---|
-| `Shift + H` | Go to **Previous Buffer** |
-| `Shift + L` | Go to **Next Buffer** |
-| `Space bp` | Toggle Pin buffer |
+| :--- | :--- |
+| `Shift-H` | Go to **Previous Buffer** |
+| `Shift-L` | Go to **Next Buffer** |
+| `Space bp` | **Toggle Pin** current buffer |
 | `Space bo` | Close all **Other** buffers |
-| `Space bl` | Close buffers to the **Left** |
-| `Space br` | Close buffers to the **Right** |
-| `Space bP` | Delete all non-pinned buffers |
+| `Space bl` | Close all buffers to the **Left** |
+| `Space br` | Close all buffers to the **Right** |
+| `Space bP` | Close all **non-pinned** buffers |
 
-### Code Navigation & LSP
+### 🧠 Code Navigation & LSP
 
 | Shortcut | Action |
-|---|---|
-| `gd` | Go to **Definition** |
-| `gr` | Go to **References** |
-| `gi` | Go to **Implementation** |
-| `gt` | Go to **Type Definition** |
-| `K` | Display **Hover Documentation** |
-| `Space rn` | **Rename** symbol across workspace |
-| `Space ca` | Trigger **Code Action** (Quick Fix / CSpell fix) |
-| `gl` | Open diagnostic float window |
+| :--- | :--- |
+| `gd` | **Go to Definition** (Telescope picker) |
+| `gr` | **Go to References** (Telescope picker) |
+| `gi` | **Go to Implementation** |
+| `gt` | **Go to Type Definition** |
+| `K` | **Hover Documentation** (rounded float window) |
+| `Space rn` | **Rename** symbol across entire workspace |
+| `Space ca` | **Code Action** / Quick Fix / CSpell word fix |
+| `Space q` | Open **Diagnostic List** in location list |
+| `gl` | Open **Diagnostic Float** for current line |
 | `[d` / `]d` | Jump to **Previous / Next Diagnostic** |
-| `Alt + Left` / `Alt + Right` | Jump backward / forward in jump list (`C-o` / `C-i`) |
+| `Alt + ←` | **Jump Back** in jump list (`C-o`) |
+| `Alt + →` | **Jump Forward** in jump list (`C-i`) |
 
-### Line & Selection Manipulation
+> 💡 LSP servers auto-installed by Mason: `pyright`, `ts_ls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `yamlls`, `bashls`, `clangd`, `lua_ls`, `cspell_ls`.
+
+### ✍️ Autocompletion (nvim-cmp)
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl-Space` | **Trigger** completion menu manually |
+| `Tab` | Select **next** completion item |
+| `Shift-Tab` | Select **previous** completion item |
+| `Enter` | **Confirm** selected completion |
+| `Ctrl-e` | **Dismiss / abort** completion menu |
+
+### ✏️ Line & Selection Editing
 
 | Shortcut | Action | Mode |
-|---|---|---|
-| `Alt + j` | Move line / selection **Down** | Normal, Insert, Visual |
-| `Alt + k` | Move line / selection **Up** | Normal, Insert, Visual |
-| `<Esc>` | Clear search highlights (`nohlsearch`) | Normal |
+| :--- | :--- | :--- |
+| `Alt-j` | Move line / selection **Down** | Normal, Insert, Visual |
+| `Alt-k` | Move line / selection **Up** | Normal, Insert, Visual |
+| `<Esc>` | Clear **search highlights** (`nohlsearch`) | Normal |
 
-> 💡 **Mac Users**: `option_as_alt = "Both"` is enabled in Alacritty, so your Mac Option key acts natively as `Alt` for `Alt+j` and `Alt+k`.
+> 💡 **Mac Users**: `option_as_alt = "Both"` is set in Alacritty — your Mac `Option` key acts as `Alt` for `Alt+j` / `Alt+k`.
 
-### Git Integration (Gitsigns & Telescope)
+### 🌿 Git Integration (Gitsigns & Telescope)
 
 | Shortcut | Action |
-|---|---|
-| `]h` / `[h` | Jump to **Next / Previous Hunk** |
-| `Space hs` | Stage hunk |
-| `Space hr` | Reset hunk |
-| `Space hp` | Preview hunk inline |
-| `Space hb` | Git blame line |
-| `Space hy` | **Copy Git blame commit hash** for current line to clipboard |
-| `Space tb` | Toggle inline Git blame |
-| `Space gc` | Browse Git Commits in Telescope |
-| `Space gb` | Browse Git Branches in Telescope |
-| `Space gs` | Browse Git Status in Telescope |
+| :--- | :--- |
+| `]h` / `[h` | Jump to **Next / Previous Git Hunk** |
+| `Space hs` | **Stage hunk** (also works on visual selection) |
+| `Space hr` | **Reset hunk** (also works on visual selection) |
+| `Space hS` | **Stage entire buffer** |
+| `Space hR` | **Reset entire buffer** |
+| `Space hu` | **Undo** last staged hunk |
+| `Space hp` | **Preview hunk** in float window |
+| `Space hi` | **Preview hunk inline** |
+| `Space hb` | **Full Git blame** for current line |
+| `Space hy` | **Copy commit hash** of blame for current line to clipboard |
+| `Space hd` | **Diff this** file against HEAD |
+| `Space tb` | **Toggle** inline Git blame on current line |
+| `Space gc` | **Browse Git Commits** in Telescope |
+| `Space gb` | **Browse Git Branches** in Telescope |
+| `Space gs` | **Browse Git Status** in Telescope |
+
+### ⏪ Undo History (Undotree)
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Space u` | **Toggle Undotree** — visual branch tree of all edit history |
+
+> 💡 Undotree persists your undo history **across sessions** — you can recover changes from days ago.
 
 ---
 
-## 🔍 6. fzf — Fuzzy Finder (shell)
+## 🔍 6. Shell — fzf & Aliases
 
-Wired up by `setup_shell.sh` via `eval "$(fzf --zsh)"` / `eval "$(fzf --bash)"`.
-
-### Key bindings (everywhere in the shell)
-
-| Shortcut | Action |
-|---|---|
-| `Ctrl-T` | Fuzzy-find **files** (preview on the right) and paste onto the command line |
-| `Ctrl-R` | Fuzzy-search **command history** |
-| `Alt-C` | Fuzzy-find a **directory** and `cd` into it |
-
-### Tab completion (`**`)
-
-Type `**` then `Tab` after a command:
-
-| Example | Action |
-|---|---|
-| `cd **<Tab>` | Fuzzy-complete a directory, then cd |
-| `kill **<Tab>` | Fuzzy-pick a process, then kill it |
-| `nvim **<Tab>` / `v **<Tab>` | Fuzzy-complete a file, then open in Neovim |
-
-### Commands / aliases
+### Shell Aliases
 
 | Command | Action |
-|---|---|
-| `ta` | **Tmux Sessionizer**: Fuzzy-find project folder → switch/create session |
-| `vf` | Fuzzy-find file(s) with preview → open in Neovim (`nvim $(fzf --preview …)`) |
-| `vf <query>` | Same, but start fzf filtered by `<query>` |
-| `fcd` | Fuzzy-find a directory and `cd` into it |
-| `fcd <path>` | Same, searching under `<path>` |
-| `fkill` | Fuzzy-pick process(es) and `kill -9` |
-| `fkill 15` | Same, but send SIGTERM (`kill -15`) |
+| :--- | :--- |
+| `v` | Open Neovim (`nvim`) |
+| `t` | Open tmux |
+| `ta` | **Tmux Sessionizer** — fuzzy-find project folder & switch/create session |
 
-> **Multi-select**: in `vf` and `fkill`, use `Tab` to mark multiple items, then `Enter`.
-
----
-
-## 🔌 7. TPM (Tmux Plugin Manager) Commands
-
-Inside tmux:
+### fzf Key Bindings (everywhere in the shell)
 
 | Shortcut | Action |
-|---|---|
-| `Ctrl-a I` | **Install** new plugins listed in `tmux.conf` |
-| `Ctrl-a U` | **Update** existing tmux plugins |
-| `Ctrl-a Alt-u` | Remove / clean unlisted plugins |
-| `Ctrl-a r` | **Reload** tmux configuration |
+| :--- | :--- |
+| `Ctrl-T` | Fuzzy-find **files** with live preview → paste path to command line |
+| `Ctrl-R` | Fuzzy-search **command history** |
+| `Alt-C` | Fuzzy-find **directory** → `cd` into it |
+
+### fzf Tab Completion (`**`)
+
+| Example | Action |
+| :--- | :--- |
+| `cd **<Tab>` | Fuzzy-complete a directory, then `cd` |
+| `kill **<Tab>` | Fuzzy-pick a process to kill |
+| `v **<Tab>` / `nvim **<Tab>` | Fuzzy-complete a file, then open in Neovim |
+
+### Shell Helper Functions
+
+| Command | Action |
+| :--- | :--- |
+| `vf` | Fuzzy-find file(s) with live preview → open in Neovim |
+| `vf <query>` | Same, but start with a pre-filtered query |
+| `fcd` | Fuzzy-find a directory → `cd` into it |
+| `fcd <path>` | Same, searching under a specific `<path>` |
+| `fkill` | Fuzzy-pick process(es) → `kill -9` them |
+| `fkill 15` | Same, but send `SIGTERM` (`kill -15`) |
+
+> 💡 **Multi-select**: In `vf` and `fkill`, press `Tab` to mark multiple items, then `Enter` to act on all.
+
+> 💡 **fzf preview**: `Ctrl-u` / `Ctrl-d` scroll the preview pane up / down.
 
 ---
 
-## 🚀 8. Config Optimizations Included
+## 🚀 7. Configuration Highlights
 
-- 🟢 **macOS Option Key Support**: `option_as_alt = "Both"` in Alacritty enables native `Alt+j`/`Alt+k` line shifting on Mac.
-- 🏷️ **Dynamic Folder Titles**: tmux tabs auto-rename to your current directory name.
-- █/│ **Dynamic Cursor Shapes**: Neovim automatically toggles between Solid Block `█` (Normal) and Thin Beam `│` (Insert) inside tmux.
-- 📊 **Single Status Bar**: `vim-tpipeline` embeds Neovim status into tmux and restores the tmux bar cleanly on exit.
+| Feature | Detail |
+| :--- | :--- |
+| **macOS Option Key** | `option_as_alt = "Both"` in Alacritty → `Alt+j`/`Alt+k` work natively |
+| **Dynamic Window Titles** | tmux tabs auto-rename to current directory name |
+| **Cursor Shape Sync** | Block `█` in Normal mode, Beam `│` in Insert — synced through tmux |
+| **Unified Status Bar** | `vim-tpipeline` embeds Neovim's lualine directly into tmux's status bar |
+| **Session Persistence** | `tmux-continuum` auto-saves every 15 min; `tmux-resurrect` restores on start |
+| **Clipboard Sync** | tmux copy mode + Neovim yanks both write to OS system clipboard |
+| **Code Spell Check** | `cspell_ls` LSP flags misspellings as diagnostics — fix via `Space ca` |

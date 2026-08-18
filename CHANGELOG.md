@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Linux Distribution Detection (`scripts/detect_os.sh`)**: Enhanced Linux distro resolution to auto-detect Ubuntu derivatives (Pop!_OS, Linux Mint, Elementary OS, Zorin OS, KDE Neon, etc.) via `/etc/os-release` `ID` and `ID_LIKE` scanning.
 - **Shell Installer (`scripts/setup_shell.sh`)**: Refactored rc file block management using `upsert_rc_block` for clean updating without duplicate blocks, targeting `~/.zshrc` on macOS and `~/.bashrc` on Linux.
-- **Documentation**: Updated `README.md` and `SHORTCUTS.md` with complete fzf keybinding cheat sheet, Starship step descriptions, and directory tree additions.
+- **Documentation**: Updated `README.md` and restructured [`SHORTCUTS.md`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/SHORTCUTS.md) into a high-density, concise quick-reference cheat sheet categorized by navigation, tmux, Neovim, and shell/fzf commands.
 
 ---
 
