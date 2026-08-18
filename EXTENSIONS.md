@@ -70,25 +70,26 @@ Neovim plugins are managed by **Lazy.nvim** in the [`rakeshkandhi/nvim`](https:/
 
 ### 💡 B. Language Server Protocol (LSP), Completion & Snippets
 
-| Extension / Plugin                                             | Purpose                                                                            | Workflow Impact & Efficiency                                                                                    |
-| :------------------------------------------------------------- | :--------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
-| **`mason.nvim`**                                               | Package manager for LSP servers, linters, and formatters.                          | Single-command installation (`:Mason`) of language tools (Pyright, ts_ls, gopls, Rust Analyzer, etc.).          |
-| **`mason-lspconfig.nvim`**                                     | Bridges Mason with Neovim LSP config.                                              | Auto-installs required LSP servers based on current filetypes.                                                  |
-| **`nvim-lspconfig`**                                           | Configures native Neovim LSP clients.                                              | Provides real-time syntax checking, hover documentation (`K`), go-to-definition (`gd`), and refactoring (`rn`). |
-| **`nvim-cmp`**                                                 | Blazingly fast autocompletion engine.                                              | Popups intelligent code completions as you type.                                                                |
-| **`cmp-nvim-lsp` / `cmp-buffer` / `cmp-path` / `cmp-cmdline`** | Completion sources for LSP, buffer words, file system paths, and vim command line. | Complete context-aware completions across code, file paths, and shell commands.                                 |
-| **`LuaSnip` & `friendly-snippets`**                            | Code snippet expansion engine and library.                                         | Expands boilerplate code blocks (loops, components, functions) with single tab triggers.                        |
+| Extension / Plugin | Purpose | Workflow Impact & Efficiency |
+| :--- | :--- | :--- |
+| **`mason.nvim`** | Package manager for LSP servers, linters, and formatters. | Single-command UI (`:Mason`) to install/update/remove any language tool. |
+| **`mason-lspconfig.nvim`** | Bridges Mason with Neovim's native LSP. Auto-installs: `pyright`, `ts_ls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `yamlls`, `bashls`, `clangd`, `lua_ls`, `cspell_ls`. | LSP servers present on first launch — zero manual setup. |
+| **`mason-tool-installer.nvim`** | Auto-installs formatters and linters via Mason on startup. Manages: `stylua`, `prettier`, `ruff`, `eslint_d`, `cspell`. | Formatters and linters are always present without manual `brew`/`npm` installs. |
+| **`nvim-lspconfig`** | Configures native Neovim LSP clients. | Real-time diagnostics, hover docs (`K`), go-to-definition (`gd`), workspace rename (`Space rn`). |
+| **`nvim-cmp`** | Blazingly fast autocompletion engine. | Intelligent completions as you type from LSP, buffer, file paths, and command line. |
+| **`cmp-nvim-lsp` / `cmp-buffer` / `cmp-path` / `cmp-cmdline`** | Completion sources for LSP symbols, buffer words, file paths, and Vim `:` commands. | Context-aware completions across every editing surface. |
+| **`LuaSnip` & `friendly-snippets`** | Snippet engine + 400+ language snippet library. | Expand boilerplate (functions, loops, React components) with `Tab`. |
 
 ---
 
 ### 🔍 C. Syntax Parsing, Formatting & Linting
 
-| Extension / Plugin                  | Purpose                                         | Workflow Impact & Efficiency                                                                             |
-| :---------------------------------- | :---------------------------------------------- | :------------------------------------------------------------------------------------------------------- |
-| **`nvim-treesitter`**               | Incremental Abstract Syntax Tree (AST) parsing. | Provides rich, context-aware syntax highlighting, accurate indentation, and structural code selection.   |
-| **`conform.nvim`**                  | Asynchronous code auto-formatter.               | Automatically formats code on save (`prettier`, `black`, `gofmt`, `stylua`) without freezing the UI.     |
-| **`nvim-lint`**                     | Asynchronous code linter.                       | Runs linters (`eslint`, `shellcheck`, `flake8`) in the background to catch subtle bugs before execution. |
-| **`nvim-ts-context-commentstring`** | Treesitter-based comment toggling.              | Correctly comments JSX/TSX inside HTML templates (`gcc` / `gc` in visual mode).                          |
+| Extension / Plugin | Purpose | Workflow Impact & Efficiency |
+| :--- | :--- | :--- |
+| **`nvim-treesitter`** | Incremental AST parser (`auto_install = true`). | Precise syntax highlighting and correct indentation for any language opened. |
+| **`conform.nvim`** | Async auto-formatter. Formats on save **and** on `Alt-Shift-F`. Formatters: `lua → stylua`, `js/ts/jsx/tsx → prettier`, `json/jsonc → prettier`. | Zero-effort consistent formatting; never manually run a formatter again. |
+| **`nvim-lint`** | Async linter triggered on save, buffer enter, and leaving insert mode. Linters: `python → ruff`, `js/ts/jsx/tsx → eslint_d`. | Linting feedback appears without blocking the editor or running commands. |
+| **`nvim-ts-context-commentstring`** | Treesitter-aware comment string detection. | `gcc` / `gc` uses the correct comment style per context — `//` in JSX, `#` in shell, `--` in Lua, even inside embedded languages. |
 
 ---
 

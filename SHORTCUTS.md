@@ -113,11 +113,20 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 
 ## ⚡ 5. Neovim Keybindings (Leader = `Space`)
 
+### 🚀 Dashboard (on Neovim startup)
+
+| Key | Action |
+| :--- | :--- |
+| `u` | Update all plugins (`:Lazy update`) |
+| `f` | Find files (Telescope) |
+| `r` | Recent files (Telescope oldfiles) |
+| `t` | Search text (Live Grep) |
+
 ### 🔭 Telescope — Fuzzy Finder
 
 | Shortcut | Action |
 | :--- | :--- |
-| `Space ff` | **Find Files** in project (respects `.gitignore`, hides `node_modules` etc.) |
+| `Space ff` | **Find Files** in project (ignores `node_modules`, `dist`, `.git`, lock files, etc.) |
 | `Space fg` | **Live Grep** — search text across all project files |
 | `Space fw` | **Grep word** under cursor across project |
 | `Space fb` | **Search Buffers** — switch between open files |
@@ -128,7 +137,7 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `Space fk` | **Keymaps** — search all active keybindings |
 | `Space fc` | **Commands** — search Neovim commands |
 
-> 💡 Inside Telescope file picker: press `Ctrl-y` (Insert) or `y` (Normal) to copy the file path to clipboard.
+> 💡 Inside Telescope file picker: `Ctrl-y` (Insert mode) or `y` (Normal mode) copies the selected file path to clipboard.
 
 ### 📂 Buffer Navigation (Top Tab Bar)
 
@@ -171,6 +180,25 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `Enter` | **Confirm** selected completion |
 | `Ctrl-e` | **Dismiss / abort** completion menu |
 
+### 🖊️ Formatting & Linting
+
+| Shortcut / Trigger | Action |
+| :--- | :--- |
+| `Alt-Shift-F` | **Manually format** current document |
+| _On save_ | **Auto-format**: `lua` → `stylua` · `js/ts/jsx/tsx` → `prettier` · `json/jsonc` → `prettier` |
+| _On save / enter / leave insert_ | **Auto-lint**: `python` → `ruff` · `js/ts/jsx/tsx` → `eslint_d` |
+
+### 💬 Comments (Treesitter-aware)
+
+| Shortcut | Action | Mode |
+| :--- | :--- | :--- |
+| `gcc` | Toggle **line comment** | Normal |
+| `gc` | Toggle **comment** on selection | Visual |
+| `gcA` | Add comment at **end of line** | Normal |
+| `gco` / `gcO` | Add comment **below / above** current line | Normal |
+
+> 💡 Context-aware via `nvim-ts-context-commentstring` — uses `//` inside JSX, `/* */` in CSS, `#` in shell, `--` in Lua, etc.
+
 ### ✏️ Line & Selection Editing
 
 | Shortcut | Action | Mode |
@@ -180,6 +208,13 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `<Esc>` | Clear **search highlights** (`nohlsearch`) | Normal |
 
 > 💡 **Mac Users**: `option_as_alt = "Both"` is set in Alacritty — your Mac `Option` key acts as `Alt` for `Alt+j` / `Alt+k`.
+
+### 🔑 which-key
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Space ?` | Show **all buffer-local keymaps** in a popup |
+| _Any `Space` prefix_ | which-key popup appears automatically showing available continuations |
 
 ### 🌿 Git Integration (Gitsigns & Telescope)
 
@@ -207,7 +242,7 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | :--- | :--- |
 | `Space u` | **Toggle Undotree** — visual branch tree of all edit history |
 
-> 💡 Undotree persists your undo history **across sessions** — you can recover changes from days ago.
+> 💡 Undotree persists undo history **across sessions** — recover changes from days ago even after closing Neovim.
 
 ---
 
@@ -228,6 +263,7 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `Ctrl-T` | Fuzzy-find **files** with live preview → paste path to command line |
 | `Ctrl-R` | Fuzzy-search **command history** |
 | `Alt-C` | Fuzzy-find **directory** → `cd` into it |
+| `Ctrl-u` / `Ctrl-d` | Scroll fzf **preview pane** up / down |
 
 ### fzf Tab Completion (`**`)
 
@@ -250,11 +286,9 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 
 > 💡 **Multi-select**: In `vf` and `fkill`, press `Tab` to mark multiple items, then `Enter` to act on all.
 
-> 💡 **fzf preview**: `Ctrl-u` / `Ctrl-d` scroll the preview pane up / down.
-
 ---
 
-## 🚀 7. Configuration Highlights
+## 🚀 7. Configuration Highlights & Behaviours
 
 | Feature | Detail |
 | :--- | :--- |
@@ -264,4 +298,12 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | **Unified Status Bar** | `vim-tpipeline` embeds Neovim's lualine directly into tmux's status bar |
 | **Session Persistence** | `tmux-continuum` auto-saves every 15 min; `tmux-resurrect` restores on start |
 | **Clipboard Sync** | tmux copy mode + Neovim yanks both write to OS system clipboard |
+| **Relative Line Numbers** | `relativenumber = true` — jump distances shown instantly beside every line |
+| **Scroll Context** | `scrolloff = 8` — always 8 lines of context above/below cursor |
+| **Persistent Undo** | `undofile = true` — undo history survives closing Neovim |
+| **Smart Search** | `ignorecase` + `smartcase` — case-insensitive unless you type a capital |
+| **Treesitter Auto-install** | `auto_install = true` — parsers install automatically for any new filetype |
 | **Code Spell Check** | `cspell_ls` LSP flags misspellings as diagnostics — fix via `Space ca` |
+| **Spellcheck in prose** | Spell check auto-enabled for `markdown`, `text`, `gitcommit` buffers |
+| **`.env` → shell filetype** | `.env`, `.env.local`, `.env.production` etc. open with `sh` syntax & LSP |
+| **Trackpad Scroll in Neovim** | Mouse scroll wheel / trackpad moves cursor line by line in Normal mode |

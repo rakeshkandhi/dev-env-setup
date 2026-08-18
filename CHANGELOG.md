@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] - 2026-08-19 01:29:00 +0530
+
+### Added
+- **`.env` → Shell Filetype** (`~/.config/nvim/lua/config/autocmds.lua`): Added autocmd so `.env`, `.env.local`, `.env.production`, `.env.development`, etc. open with `sh` filetype — enabling `bashls` LSP, Treesitter shell highlighting, `conform.nvim` formatting, `shellcheck` linting, and correct `#` comments.
+
+### Changed
+- **`SHORTCUTS.md`** — Restored and fully expanded with all previously missing shortcuts:
+  - Dashboard startup keys (`u`, `f`, `r`, `t`)
+  - `which-key` popup (`Space ?` and any `Space` prefix)
+  - `Alt-Shift-F` manual format + auto-format-on-save table (per language)
+  - Auto-lint triggers and per-filetype linter list
+  - Treesitter-aware comment shortcuts (`gcc`, `gc`, `gcA`, `gco`, `gcO`)
+  - fzf `Ctrl-u` / `Ctrl-d` preview scroll
+  - Full config behaviours table (relative numbers, `scrolloff`, persistent undo, smart search, `auto_install`, `.env` filetype, trackpad scroll)
+- **`EXTENSIONS.md`** — Gap-filled with accurate, config-sourced details:
+  - Added `mason-tool-installer.nvim` row (auto-installs `stylua`, `prettier`, `ruff`, `eslint_d`, `cspell`)
+  - Updated `mason-lspconfig.nvim` row with actual server list
+  - Updated `conform.nvim` row with actual formatters per filetype
+  - Updated `nvim-lint` row with actual linters per filetype
+  - Updated `nvim-ts-context-commentstring` row with concrete shortcut examples
+
+---
+
 ## [Unreleased / Pending Changes] - 2026-08-19 01:10:00 +0530
 
 ### Added
