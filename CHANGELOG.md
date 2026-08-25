@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] - 2026-08-25 10:57:48 +0530
+
+### Added
+- **Battery Indicator in the tmux Status Bar**: Added [`scripts/tmux_battery.sh`](scripts/tmux_battery.sh) (symlinked to `~/.local/bin/tmux-battery` by `scripts/setup_tmux.sh`). The status bar now shows the current charge percentage with a Nerd Font battery icon, sitting between the Neovim/pane-title segment and the clock.
+  - Icon reflects the charge level, switching to a bolt when plugged in.
+  - Colour puts urgency first, in Catppuccin Mocha tones: red at 15% and below, peach at 16–35%, green while charging, normal text otherwise. A low battery still warns while plugged in.
+  - Works on Linux (`/sys/class/power_supply/BAT*`) and macOS (`pmset -g batt`), and reads the internal battery rather than an attached UPS.
+  - Prints nothing on machines with no battery, so desktops and VMs keep a clean status bar with no leftover separator.
+
+### Changed
+- **`tmux/themes/catppuccin.conf`** — `status-right` now renders the battery segment before the clock.
+- **`scripts/setup_tmux.sh`** — Installs both tmux helper scripts (`tmux-sessionizer` and the new `tmux-battery`) into `~/.local/bin`.
+- **`README.md`** — Status bar description and the `scripts/` tree now list the battery helper.
+
+---
+
 ## [Unreleased] - 2026-08-19 01:29:00 +0530
 
 ### Added

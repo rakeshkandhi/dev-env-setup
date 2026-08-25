@@ -178,7 +178,7 @@ Instead of two status bars (tmux + Neovim's lualine), **vim-tpipeline** merges t
 | Context | What the status bar shows |
 | :--- | :--- |
 | **Inside Neovim** | tmux renders lualine content — mode, filename, diagnostics, git branch |
-| **In the shell** | tmux shows its own bar — session name, windows, git branch, clock |
+| **In the shell** | tmux shows its own bar — session name, windows, git branch, battery, clock |
 
 The result: a clean, single status bar that adapts to context.
 
@@ -294,7 +294,8 @@ dev-env-setup/
     ├── setup_alacritty.sh  # Alacritty config setup
     ├── setup_starship.sh   # Starship prompt installer (Linux)
     ├── setup_shell.sh      # Shell env, aliases, fzf integration
-    └── tmux_sessionizer.sh # Fuzzy project & session switcher helper (`ta` / `Ctrl-a f`)
+    ├── tmux_sessionizer.sh # Fuzzy project & session switcher helper (`ta` / `Ctrl-a f`)
+    └── tmux_battery.sh     # Battery percentage for the tmux status bar
 ```
 
 ---
