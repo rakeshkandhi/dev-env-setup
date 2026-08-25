@@ -5,6 +5,7 @@
 # • Symlinks repo tmux.conf     → ~/.config/tmux/tmux.conf
 # • Symlinks repo themes/       → ~/.config/tmux/themes
 # • Creates legacy symlink       → ~/.tmux.conf → ~/.config/tmux/tmux.conf
+# • Installs tmux-sessionizer + tmux-battery → ~/.local/bin
 # • Installs TPM (Tmux Plugin Manager)
 # ==============================================================================
 set -euo pipefail
@@ -92,11 +93,15 @@ main() {
     # 3. Legacy ~/.tmux.conf symlink (points to the XDG config)
     safe_symlink "${TMUX_CONFIG_DIR}/tmux.conf" "${TMUX_LEGACY}"
 
-    # 4. Install tmux-sessionizer helper to ~/.local/bin
+    # 4. Install tmux helper scripts to ~/.local/bin
     mkdir -p "${HOME}/.local/bin"
     if [[ -f "${SCRIPT_DIR}/tmux_sessionizer.sh" ]]; then
         chmod +x "${SCRIPT_DIR}/tmux_sessionizer.sh"
         safe_symlink "${SCRIPT_DIR}/tmux_sessionizer.sh" "${HOME}/.local/bin/tmux-sessionizer"
+    fi
+    if [[ -f "${SCRIPT_DIR}/tmux_battery.sh" ]]; then
+        chmod +x "${SCRIPT_DIR}/tmux_battery.sh"
+        safe_symlink "${SCRIPT_DIR}/tmux_battery.sh" "${HOME}/.local/bin/tmux-battery"
     fi
 
     # 4. Install TPM
