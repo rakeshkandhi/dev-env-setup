@@ -134,13 +134,13 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 
 ### 🗂️ File Explorer (native `netrw`, no plugin)
 
-Opens **in place** (`:Explore`, not `:Lexplore`) — same one-window feel as Telescope: pick a file and it replaces the browser, no sidebar left behind.
+A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it in your **main window**, and the sidebar stays open.
 
 | Shortcut | Action |
 | :--- | :--- |
-| `Space e` | **Open** tree-view file explorer in the current window |
-| `Enter` | Open the selected file **in place** |
-| `%` | **Create a new file** in place |
+| `Space e` | **Toggle** tree-view file explorer sidebar (left) |
+| `Enter` | Open the selected file **in your main window** (sidebar stays open) |
+| `%` | **Create a new file** in your main window |
 | `d` | Create a new **directory** |
 | `-` | Go **up** a directory |
 
