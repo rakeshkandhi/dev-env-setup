@@ -189,24 +189,25 @@ alias v="nvim"
 alias t="tmux"
 alias ta="tmux-sessionizer"
 
-# Ubuntu/Debian ships the fd binary as fdfind
-if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
+# Ubuntu/Debian ships the fd binary as fdfind. Resolve the real binary name
+# *before* defining the alias: an \`fd\` alias makes \`command -v fd\` succeed, so
+# a bare \`fd\` would end up in FZF_DEFAULT_COMMAND — and fzf runs that through
+# /bin/sh, where aliases do not exist, leaving every fzf list empty.
+unalias fd 2>/dev/null || true
+if command -v fd >/dev/null 2>&1; then
+  _DEV_ENV_FD="fd"
+elif command -v fdfind >/dev/null 2>&1; then
+  _DEV_ENV_FD="fdfind"
   alias fd="fdfind"
+else
+  _DEV_ENV_FD=""
 fi
 
 # fzf defaults — fd as the finder, cat (or bat) for previews
-if command -v fd >/dev/null 2>&1; then
-  export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-elif command -v fdfind >/dev/null 2>&1; then
-  export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git'
-fi
-if [ -n "\${FZF_DEFAULT_COMMAND:-}" ]; then
+if [ -n "\${_DEV_ENV_FD}" ]; then
+  export FZF_DEFAULT_COMMAND="\${_DEV_ENV_FD} --type f --hidden --follow --exclude .git"
   export FZF_CTRL_T_COMMAND="\${FZF_DEFAULT_COMMAND}"
-fi
-if command -v fd >/dev/null 2>&1; then
-  export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
-elif command -v fdfind >/dev/null 2>&1; then
-  export FZF_ALT_C_COMMAND='fdfind --type d --hidden --follow --exclude .git'
+  export FZF_ALT_C_COMMAND="\${_DEV_ENV_FD} --type d --hidden --follow --exclude .git"
 fi
 
 # Preview must be a standalone command — fzf runs it in a subshell
@@ -245,10 +246,8 @@ vf() {
 fcd() {
   local start="\${1:-.}"
   local dir
-  if command -v fd >/dev/null 2>&1; then
-    dir="\$(fd --type d --hidden --follow --exclude .git . "\${start}" | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
-  elif command -v fdfind >/dev/null 2>&1; then
-    dir="\$(fdfind --type d --hidden --follow --exclude .git . "\${start}" | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
+  if [ -n "\${_DEV_ENV_FD}" ]; then
+    dir="\$("\${_DEV_ENV_FD}" --type d --hidden --follow --exclude .git . "\${start}" | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
   else
     dir="\$(find "\${start}" -type d 2>/dev/null | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
   fi || return
