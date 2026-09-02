@@ -204,6 +204,8 @@ Copying works everywhere, pasting works anywhere:
 | :--- | :--- |
 | Yank in Neovim (`y`) | → system clipboard (`unnamedplus`) |
 | Yank in tmux copy mode | → system clipboard (`pbcopy` / `xclip`) |
+| `Ctrl-a g` in tmux | → current git branch name to system clipboard |
+| `Ctrl-a y` in tmux | → current directory path to system clipboard |
 | Paste | `Cmd+V` (macOS) or `Ctrl+Shift+V` (Linux) |
 
 ### Catppuccin Mocha Theme

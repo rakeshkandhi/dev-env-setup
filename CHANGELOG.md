@@ -10,9 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-08-19 01:29:00 +0530
 
 ### Added
+- **Yank git branch** (`Ctrl-a g`, `tmux/tmux.conf`): copies the git branch of the active pane's directory to the system clipboard and the tmux paste buffer, with a status-line confirmation. 
+- **Yank current path** (`Ctrl-a y`): tmux-yank's path yank moved from `Y` to `y`, replacing its command-line yank.
 - **`.env` → Shell Filetype** (`~/.config/nvim/lua/config/autocmds.lua`): Added autocmd so `.env`, `.env.local`, `.env.production`, `.env.development`, etc. open with `sh` filetype — enabling `bashls` LSP, Treesitter shell highlighting, `conform.nvim` formatting, `shellcheck` linting, and correct `#` comments.
 
 ### Changed
+- **`tmux/tmux.conf`** — Clipboard command (`pbcopy` / `xclip`) is now stored once in the `@clipboard` user option and shared by all clipboard bindings.
 - **`SHORTCUTS.md`** — Restored and fully expanded with all previously missing shortcuts:
   - Dashboard startup keys (`u`, `f`, `r`, `t`)
   - `which-key` popup (`Space ?` and any `Space` prefix)

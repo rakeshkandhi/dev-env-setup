@@ -102,6 +102,8 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `y` | **Yank** selection → system clipboard & exit |
 | `Mouse Drag` | Auto-yank drag selection to system clipboard |
 | `Ctrl-a ]` | Paste from tmux copy buffer |
+| `Ctrl-a g` | **Yank git branch** of the active pane's directory → system clipboard & tmux buffer |
+| `Ctrl-a y` | **Yank current path** of the active pane → system clipboard & tmux buffer |
 | `Cmd+V` (Mac) / `Ctrl+Shift+V` (Linux) | Paste from system clipboard anywhere |
 
 ### Neovim Clipboard
