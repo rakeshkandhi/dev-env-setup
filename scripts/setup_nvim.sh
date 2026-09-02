@@ -8,6 +8,10 @@
 #   • Same remote  → git pull
 #   • Different    → timestamped backup + fresh clone
 #   • Not a repo   → timestamped backup + fresh clone
+#
+# After a successful clone/pull, bootstraps the config headlessly so its
+# vim.pack plugins (and the treesitter parsers / fzf-native build that
+# vim.pack can't run for you) are ready before the user's first launch.
 # ==============================================================================
 set -euo pipefail
 
@@ -57,6 +61,29 @@ backup_dir() {
     mv "${src}" "${backup}"
 }
 
+# Headlessly install vim.pack plugins + build steps vim.pack doesn't run itself
+bootstrap_plugins() {
+    if ! command -v nvim &>/dev/null; then
+        _warn "nvim not on PATH — skipping plugin bootstrap (run nvim once manually)"
+        return 0
+    fi
+
+    _info "Bootstrapping plugins (vim.pack.add, treesitter parsers) …"
+    if ! nvim --headless "+qa" 2>/tmp/nvim_bootstrap.log; then
+        _warn "Headless plugin bootstrap reported an issue — see /tmp/nvim_bootstrap.log"
+    fi
+    nvim --headless -c "TSUpdate" -c "qa" 2>>/tmp/nvim_bootstrap.log || true
+
+    local fzf_native_dir="${NVIM_CONFIG_DIR}/pack/core/opt/telescope-fzf-native.nvim"
+    [[ -d "${fzf_native_dir}" ]] || fzf_native_dir="$(find "${HOME}/.local/share/nvim/site/pack" -maxdepth 4 -type d -name 'telescope-fzf-native.nvim' 2>/dev/null | head -1)"
+    if [[ -n "${fzf_native_dir}" && -d "${fzf_native_dir}" ]]; then
+        _info "Building telescope-fzf-native …"
+        (cd "${fzf_native_dir}" && make) &>/tmp/nvim_bootstrap.log || _warn "telescope-fzf-native build failed — see /tmp/nvim_bootstrap.log"
+    fi
+
+    _ok "Plugin bootstrap complete"
+}
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -73,10 +100,11 @@ main() {
 
             if [[ "$(normalise_url "${current_remote}")" == "$(normalise_url "${NVIM_REPO_SSH}")" ]]; then
                 _info "Existing nvim config points to the correct repo — pulling latest …"
-                # --autostash: lazy.nvim rewrites lazy-lock.json on plugin updates,
-                # so the tree is often dirty; stash around the rebase and reapply.
+                # --autostash: the tree can be dirty (e.g. local plugin-state edits),
+                # so stash around the rebase and reapply.
                 if git -C "${NVIM_CONFIG_DIR}" pull --rebase --autostash --quiet; then
                     _ok "Neovim config updated (git pull)"
+                    bootstrap_plugins
                     return 0
                 fi
                 _err "git pull failed in ${NVIM_CONFIG_DIR} — resolve it manually (git -C ${NVIM_CONFIG_DIR} status)"
@@ -103,6 +131,8 @@ main() {
             return 1
         fi
     fi
+
+    bootstrap_plugins
 }
 
 main "$@"

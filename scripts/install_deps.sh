@@ -29,7 +29,9 @@ fi
 # Package lists
 # ---------------------------------------------------------------------------
 # Common packages across all platforms
-COMMON_PKGS=(git curl wget tmux neovim ripgrep fzf fd lazygit)
+# Neovim is intentionally excluded — it's installed separately by install_neovim()
+# so we always get a current release instead of whatever an OS repo has cached.
+COMMON_PKGS=(git curl wget tmux ripgrep fzf fd lazygit)
 
 # macOS-only (via Homebrew)
 BREW_EXTRAS=(node lua luarocks)
@@ -96,7 +98,6 @@ install_with_apt() {
 
     # apt uses different names for some packages
     declare -A apt_names=(
-        [neovim]="neovim"
         [ripgrep]="ripgrep"
         [fd]="fd-find"
     )
@@ -199,6 +200,265 @@ install_with_pacman() {
 }
 
 # ---------------------------------------------------------------------------
+# Install a single-binary GitHub release asset (zip) into ~/.local/bin
+# ---------------------------------------------------------------------------
+# $1 = binary name (also used for the is_installed check)
+# $2 = GitHub "owner/repo"
+# $3 = asset filename (exact, as published on the release)
+install_binary_from_zip_release() {
+    local bin_name="$1" repo="$2" asset="$3"
+
+    if is_installed "${bin_name}"; then
+        _ok "${bin_name} — already installed"
+        return 0
+    fi
+
+    _info "Installing ${bin_name} from ${repo} releases …"
+    mkdir -p "${HOME}/.local/bin"
+
+    local tmpdir
+    tmpdir="$(mktemp -d)"
+    if ! curl -fsSL "https://github.com/${repo}/releases/latest/download/${asset}" -o "${tmpdir}/${asset}"; then
+        _warn "Could not download ${asset} for ${bin_name} — skipping (install manually)"
+        rm -rf "${tmpdir}"
+        return 1
+    fi
+
+    (cd "${tmpdir}" && unzip -oq "${asset}")
+    if [[ ! -f "${tmpdir}/${bin_name}" ]]; then
+        _warn "${bin_name} binary not found inside ${asset} — skipping"
+        rm -rf "${tmpdir}"
+        return 1
+    fi
+
+    mv "${tmpdir}/${bin_name}" "${HOME}/.local/bin/${bin_name}"
+    chmod +x "${HOME}/.local/bin/${bin_name}"
+    rm -rf "${tmpdir}"
+    _ok "${bin_name} installed → ${HOME}/.local/bin/${bin_name}"
+}
+
+# ---------------------------------------------------------------------------
+# Remove the OS-packaged neovim (apt/dnf/pacman) now that ~/.local/bin/nvim
+# takes priority on PATH — leaving both around just wastes disk and can
+# confuse `which`/package-manager audits.
+# ---------------------------------------------------------------------------
+remove_os_neovim_package() {
+    case "${PKG_MANAGER}" in
+        apt)
+            if dpkg -l neovim 2>/dev/null | grep -q '^ii'; then
+                _info "Removing OS-packaged neovim (apt) — using ~/.local/bin/nvim instead …"
+                sudo apt remove -y neovim neovim-runtime && _ok "apt neovim package removed" \
+                    || _warn "Failed to remove apt neovim package — remove manually with: sudo apt remove neovim neovim-runtime"
+            fi
+            ;;
+        dnf)
+            if rpm -q neovim &>/dev/null; then
+                _info "Removing OS-packaged neovim (dnf) — using ~/.local/bin/nvim instead …"
+                sudo dnf remove -y neovim && _ok "dnf neovim package removed" \
+                    || _warn "Failed to remove dnf neovim package — remove manually with: sudo dnf remove neovim"
+            fi
+            ;;
+        pacman)
+            if pacman -Qi neovim &>/dev/null; then
+                _info "Removing OS-packaged neovim (pacman) — using ~/.local/bin/nvim instead …"
+                sudo pacman -Rns --noconfirm neovim && _ok "pacman neovim package removed" \
+                    || _warn "Failed to remove pacman neovim package — remove manually with: sudo pacman -Rns neovim"
+            fi
+            ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+# Install Neovim (always latest upstream release, not the OS-packaged one)
+# ---------------------------------------------------------------------------
+install_neovim() {
+    local latest
+    latest="$(curl -fsSL https://api.github.com/repos/neovim/neovim/releases/latest | grep '"tag_name"' | sed -E 's/.*"(v[^"]+)".*/\1/')"
+
+    if [[ -z "${latest}" ]]; then
+        _warn "Could not determine latest Neovim release — leaving existing install as-is"
+        return 0
+    fi
+
+    if [[ "${OS_TYPE}" == "macos" ]]; then
+        install_homebrew
+        if is_installed nvim && [[ "v$(nvim --version | head -1 | awk '{print $2}' | sed 's/^v//')" == "${latest}" ]]; then
+            _ok "neovim already up to date"
+            return 0
+        fi
+        if brew list --formula neovim &>/dev/null; then
+            _info "Upgrading neovim via Homebrew …"
+            brew upgrade neovim || _ok "neovim already at brew's latest formula version"
+        else
+            _info "Installing neovim via Homebrew …"
+            brew install neovim
+        fi
+        _ok "neovim installed via Homebrew"
+        return 0
+    fi
+
+    # Linux: install the official prebuilt release — no sudo needed, and it
+    # takes priority on PATH since ~/.local/bin is prepended in setup_shell.sh.
+    # Always run the cleanup below, even if ~/.local/bin/nvim is already
+    # current, so a leftover OS package from before this script existed
+    # still gets removed on a re-run.
+    if [[ -f "${HOME}/.local/bin/nvim" ]] && "${HOME}/.local/bin/nvim" --version 2>/dev/null | head -1 | grep -q "${latest#v}"; then
+        _ok "neovim ${latest} — already up to date"
+        remove_os_neovim_package
+        return 0
+    fi
+
+    local arch tarball
+    arch="$(uname -m)"
+    case "${arch}" in
+        x86_64)          tarball="nvim-linux-x86_64.tar.gz" ;;
+        aarch64|arm64)   tarball="nvim-linux-arm64.tar.gz"   ;;
+        *)
+            _err "Unsupported architecture for prebuilt neovim: ${arch}"
+            return 1
+            ;;
+    esac
+
+    local install_root="${HOME}/.local/opt/nvim-${latest}"
+    _info "Installing neovim ${latest} → ${install_root} …"
+    mkdir -p "${HOME}/.local/opt" "${HOME}/.local/bin"
+
+    local tmpdir
+    tmpdir="$(mktemp -d)"
+    curl -fsSL "https://github.com/neovim/neovim/releases/download/${latest}/${tarball}" -o "${tmpdir}/${tarball}"
+    tar xzf "${tmpdir}/${tarball}" -C "${tmpdir}"
+    rm -rf "${install_root}"
+    mv "${tmpdir}/${tarball%.tar.gz}" "${install_root}"
+    rm -rf "${tmpdir}"
+
+    ln -sf "${install_root}/bin/nvim" "${HOME}/.local/bin/nvim"
+    _ok "neovim ${latest} installed → ${HOME}/.local/bin/nvim"
+
+    remove_os_neovim_package
+}
+
+# ---------------------------------------------------------------------------
+# Install lua-language-server from upstream releases (full dir, not a zip)
+# ---------------------------------------------------------------------------
+install_lua_language_server() {
+    if is_installed lua-language-server; then
+        _ok "lua-language-server — already installed"
+        return 0
+    fi
+
+    local latest
+    latest="$(curl -fsSL https://api.github.com/repos/LuaLS/lua-language-server/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')"
+    if [[ -z "${latest}" ]]; then
+        _warn "Could not determine latest lua-language-server release — skipping"
+        return 1
+    fi
+
+    local os_part arch tarball
+    arch="$(uname -m)"
+    case "${OS_TYPE}" in
+        macos) os_part="darwin" ;;
+        linux) os_part="linux"  ;;
+    esac
+    case "${arch}" in
+        x86_64|amd64)  arch="x64"   ;;
+        aarch64|arm64) arch="arm64" ;;
+    esac
+    tarball="lua-language-server-${latest}-${os_part}-${arch}.tar.gz"
+
+    _info "Installing lua-language-server ${latest} …"
+    local install_root="${HOME}/.local/opt/lua-language-server"
+    mkdir -p "${HOME}/.local/opt" "${HOME}/.local/bin"
+    rm -rf "${install_root}"
+    mkdir -p "${install_root}"
+
+    if ! curl -fsSL "https://github.com/LuaLS/lua-language-server/releases/download/${latest}/${tarball}" -o "/tmp/${tarball}"; then
+        _warn "Could not download ${tarball} — skipping lua-language-server (install manually)"
+        return 1
+    fi
+    tar xzf "/tmp/${tarball}" -C "${install_root}"
+    rm -f "/tmp/${tarball}"
+
+    ln -sf "${install_root}/bin/lua-language-server" "${HOME}/.local/bin/lua-language-server"
+    _ok "lua-language-server installed → ${HOME}/.local/bin/lua-language-server"
+}
+
+# ---------------------------------------------------------------------------
+# Install LSP servers, linters & formatters (replaces Mason)
+# ---------------------------------------------------------------------------
+install_lsp_tools() {
+    _info "Installing LSP servers, linters & formatters …"
+
+    if is_installed npm; then
+        # Default global prefixes (e.g. /usr/local on Debian/Ubuntu) are
+        # root-owned, so `npm install -g` fails with EACCES. Point npm at
+        # ~/.local instead — already on PATH via setup_shell.sh, no sudo needed.
+        local npm_prefix
+        npm_prefix="$(npm config get prefix)"
+        if [[ ! -w "${npm_prefix}" ]]; then
+            _info "npm global prefix (${npm_prefix}) isn't user-writable — switching to ${HOME}/.local"
+            mkdir -p "${HOME}/.local"
+            npm config set prefix "${HOME}/.local"
+        fi
+
+        local npm_pkgs=(
+            pyright
+            typescript typescript-language-server
+            vscode-langservers-extracted
+            "@tailwindcss/language-server"
+            yaml-language-server
+            bash-language-server
+            cspell cspell-lsp
+            prettier
+            eslint_d
+        )
+        _info "Installing npm globals: ${npm_pkgs[*]}"
+        npm install -g "${npm_pkgs[@]}" --silent || _warn "Some npm global installs failed — check output above"
+    else
+        _warn "npm not found — skipping JS/TS/web LSP tools"
+    fi
+
+    install_lua_language_server
+
+    case "${PKG_MANAGER}" in
+        brew)
+            is_installed clangd || brew install llvm || _warn "clangd not installed — Xcode Command Line Tools usually provide it (xcode-select --install)"
+            is_installed stylua || brew install stylua || _warn "stylua install failed"
+            is_installed ruff   || brew install ruff   || _warn "ruff install failed"
+            ;;
+        apt)
+            is_installed clangd || sudo apt install -y clangd || _warn "clangd not available in apt — install manually"
+            ;;
+        dnf)
+            is_installed clangd || sudo dnf install -y clang-tools-extra || _warn "clangd not available in dnf — install manually"
+            ;;
+        pacman)
+            is_installed clangd || sudo pacman -S --noconfirm --needed clang || _warn "clangd not available in pacman — install manually"
+            ;;
+    esac
+
+    # stylua/ruff: no reliable apt/dnf/pacman package on most distros —
+    # fall back to upstream release binaries.
+    if ! is_installed stylua; then
+        local arch stylua_asset
+        arch="$(uname -m)"
+        case "${OS_TYPE}-${arch}" in
+            linux-x86_64)        stylua_asset="stylua-linux-x86_64.zip"  ;;
+            linux-aarch64|linux-arm64) stylua_asset="stylua-linux-aarch64.zip" ;;
+            macos-x86_64)        stylua_asset="stylua-macos-x86_64.zip"  ;;
+            macos-arm64|macos-aarch64) stylua_asset="stylua-macos-aarch64.zip" ;;
+        esac
+        [[ -n "${stylua_asset:-}" ]] && install_binary_from_zip_release stylua JohnnyMorganz/StyLua "${stylua_asset}"
+    fi
+
+    if ! is_installed ruff; then
+        _info "Installing ruff via the official installer …"
+        RUFF_NO_MODIFY_PATH=1 sh -c "$(curl -LsSf https://astral.sh/ruff/install.sh)" || _warn "ruff install failed — install manually"
+    fi
+
+    _ok "LSP tool installation attempted (see warnings above for anything skipped)"
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 main() {
@@ -214,6 +474,9 @@ main() {
             exit 1
             ;;
     esac
+
+    install_neovim
+    install_lsp_tools
 
     _ok "Dependency installation complete"
 }

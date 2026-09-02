@@ -314,7 +314,7 @@ main() {
             _info "Next steps:"
             echo "  1. Restart your terminal (or source your shell rc)"
             echo "  2. Restart tmux to apply config changes"
-            echo "  3. In Neovim, run  :Lazy sync  to update plugins"
+            echo "  3. Neovim plugins were already updated via vim.pack — run :lua vim.pack.update() any time to refresh them"
             echo ""
         else
             _ok "Dev environment setup complete! 🎉"
