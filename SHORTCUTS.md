@@ -115,15 +115,6 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 
 ## ⚡ 5. Neovim Keybindings (Leader = `Space`)
 
-### 🚀 Dashboard (on Neovim startup)
-
-| Key | Action |
-| :--- | :--- |
-| `u` | Update all plugins (`:Lazy update`) |
-| `f` | Find files (Telescope) |
-| `r` | Recent files (Telescope oldfiles) |
-| `t` | Search text (Live Grep) |
-
 ### 🔭 Telescope — Fuzzy Finder
 
 | Shortcut | Action |
@@ -170,27 +161,29 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `Alt + ←` | **Jump Back** in jump list (`C-o`) |
 | `Alt + →` | **Jump Forward** in jump list (`C-i`) |
 
-> 💡 LSP servers auto-installed by Mason: `pyright`, `ts_ls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `yamlls`, `bashls`, `clangd`, `lua_ls`, `cspell_ls`.
+> 💡 LSP servers/formatters/linters are installed by `dev-env-setup`'s `install_deps.sh` (not Mason): `pyright`, `ts_ls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `yamlls`, `bashls`, `clangd`, `lua_ls`, `cspell_ls`.
 
-### ✍️ Autocompletion (nvim-cmp)
+### ✍️ Autocompletion (native `vim.lsp.completion`, no plugin)
 
 | Shortcut | Action |
 | :--- | :--- |
-| `Ctrl-Space` | **Trigger** completion menu manually |
-| `Tab` | Select **next** completion item |
-| `Shift-Tab` | Select **previous** completion item |
-| `Enter` | **Confirm** selected completion |
+| _(automatic)_ | Completion menu **pops up as you type** — no trigger key needed |
+| `Ctrl-n` / `Ctrl-p` | Select **next / previous** completion item |
+| `Ctrl-y` | **Confirm** selected completion |
 | `Ctrl-e` | **Dismiss / abort** completion menu |
+| `Ctrl-x Ctrl-o` | **Force-trigger** completion manually (rarely needed) |
 
-### 🖊️ Formatting & Linting
+> 💡 No snippet engine — LSP-provided snippets insert as plain text (no `$1`/`$2` placeholder-jumping).
+
+### 🖊️ Formatting & Linting (native, no conform.nvim)
 
 | Shortcut / Trigger | Action |
 | :--- | :--- |
 | `Alt-Shift-F` | **Manually format** current document |
-| _On save_ | **Auto-format**: `lua` → `stylua` · `js/ts/jsx/tsx` → `prettier` · `json/jsonc` → `prettier` |
+| _On save_ | **Auto-format**: `lua` → `stylua` · `python` → `ruff format` · `js/ts/jsx/tsx/json/jsonc/css/html/yaml/markdown` → `prettier` |
 | _On save / enter / leave insert_ | **Auto-lint**: `python` → `ruff` · `js/ts/jsx/tsx` → `eslint_d` |
 
-### 💬 Comments (Treesitter-aware)
+### 💬 Comments (Neovim built-in)
 
 | Shortcut | Action | Mode |
 | :--- | :--- | :--- |
@@ -199,7 +192,7 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `gcA` | Add comment at **end of line** | Normal |
 | `gco` / `gcO` | Add comment **below / above** current line | Normal |
 
-> 💡 Context-aware via `nvim-ts-context-commentstring` — uses `//` inside JSX, `/* */` in CSS, `#` in shell, `--` in Lua, etc.
+> 💡 Uses each buffer's own `commentstring` (`--` in Lua, `#` in Python/shell, `//` in JS/TS, etc). No longer context-aware within a single file across embedded languages (e.g. JS inside `.vue`/`.astro`) — `nvim-ts-context-commentstring` was dropped as part of the native-plugin trim.
 
 ### ✏️ Line & Selection Editing
 
@@ -303,7 +296,7 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | **macOS Option Key** | `option_as_alt = "Both"` in Alacritty → `Alt+j`/`Alt+k` work natively |
 | **Dynamic Window Titles** | tmux tabs auto-rename to current directory name |
 | **Cursor Shape Sync** | Block `█` in Normal mode, Beam `│` in Insert — synced through tmux |
-| **Unified Status Bar** | `vim-tpipeline` embeds Neovim's lualine directly into tmux's status bar |
+| **Unified Status Bar** | `vim-tpipeline` embeds Neovim's (native, plugin-free) statusline directly into tmux's status bar |
 | **Session Persistence** | `tmux-continuum` auto-saves every 15 min; `tmux-resurrect` restores on start |
 | **Clipboard Sync** | tmux copy mode + Neovim yanks both write to OS system clipboard |
 | **Relative Line Numbers** | `relativenumber = true` — jump distances shown instantly beside every line |
