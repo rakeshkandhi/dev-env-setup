@@ -18,6 +18,7 @@
 #   • fbr  — fuzzy-find and checkout a git branch (worktree-aware)
 #   • fwt  — fuzzy-switch between existing git worktrees
 #   • fwa  — create a git worktree for a branch, cd into it
+#   • fwr  — fuzzy-remove a git worktree
 #   • fkill — fuzzy-select and kill process(es)
 #   • Linux: ~/.local/bin on PATH, starship init bash
 # ==============================================================================
@@ -339,6 +340,24 @@ fwa() {
   "\${cmd[@]}" && cd "\${path}"
 }
 
+
+# fwr — fuzzy-pick and remove a git worktree (never the main one)
+#   fwr           pick a worktree and remove it (must be clean)
+#   fwr -f        same, but force-remove even with uncommitted changes
+fwr() {
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "fwr: not a git repository" >&2; return 1; }
+  local main_root force=() line dir
+  [ "\${1:-}" = "-f" ] && force=(--force)
+  main_root="\$(git worktree list --porcelain | awk '/^worktree /{print \$2; exit}')"
+  line="\$(git worktree list \\
+    | awk -v main="\${main_root}" '\$1 != main' \\
+    | fzf --preview 'git -C {1} log --color=always --oneline --graph --date=short --pretty=format:"%C(auto)%h %ad %s" | head -200' \\
+          --preview-window=right:60%:wrap)" || return
+  [ -z "\${line}" ] && return
+  dir="\$(awk '{print \$1}' <<< "\${line}")"
+  case "\${PWD}/" in "\${dir}"/*) cd "\${main_root}" ;; esac
+  git worktree remove "\${force[@]}" "\${dir}"
+}
 
 # fkill — fuzzy-select process(es) and kill them
 #   fkill         SIGKILL (9)

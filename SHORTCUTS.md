@@ -287,6 +287,8 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `fwt` | Fuzzy-switch between existing git worktrees (path + branch shown) |
 | `fwa` | Fuzzy-pick a branch → create a worktree for it and `cd` in |
 | `fwa <branch>` | Same, for a specific (existing or brand-new) branch |
+| `fwr` | Fuzzy-pick a worktree (never the main one) → remove it |
+| `fwr -f` | Same, but force-remove even with uncommitted changes |
 | `fkill` | Fuzzy-pick process(es) → `kill -9` them |
 | `fkill 15` | Same, but send `SIGTERM` (`kill -15`) |
 

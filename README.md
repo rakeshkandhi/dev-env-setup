@@ -92,7 +92,7 @@ The install script performs the following in order:
 | **tmux** | Symlinks tmux config to `~/.config/tmux/`, installs TPM, and auto-installs plugins non-interactively |
 | **Alacritty** | Symlinks Alacritty config to `~/.config/alacritty/` |
 | **Starship** | Installs **Starship prompt** (Linux only) and symlinks Catppuccin Mocha theme to `~/.config/starship.toml` |
-| **Shell** | Configures `EDITOR=nvim`, aliases (`v`, `t`), and full **fzf** integration (`eval`, `vf` / `fcd` / `fbr` / `fwt` / `fwa` / `fkill`, `cd **` / `kill **` completion) in `~/.zshrc` / `~/.bashrc` |
+| **Shell** | Configures `EDITOR=nvim`, aliases (`v`, `t`), and full **fzf** integration (`eval`, `vf` / `fcd` / `fbr` / `fwt` / `fwa` / `fwr` / `fkill`, `cd **` / `kill **` completion) in `~/.zshrc` / `~/.bashrc` |
 
 ### 4. Post-install steps
 
@@ -257,6 +257,7 @@ A consistent color palette across all three tools:
 | `fbr` | Fuzzy-find a git branch and check it out (worktree-aware) |
 | `fwt` | Fuzzy-switch between existing git worktrees |
 | `fwa` | Create a git worktree for a branch and cd into it |
+| `fwr` | Fuzzy-remove a git worktree |
 | `fkill` | Fuzzy-pick process(es) and kill |
 
 ### Neovim — leader: `Space`
