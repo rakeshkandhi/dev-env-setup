@@ -2,7 +2,8 @@
 # ==============================================================================
 # setup_nvim.sh — Neovim Configuration Setup
 # ==============================================================================
-# Clones git@github.com:rakeshkandhi/nvim.git → ~/.config/nvim
+# Clones rakeshkandhi/nvim → ~/.config/nvim (via the SSH host alias set up
+# for this machine's two-GitHub-account push access; see NVIM_REPO_SSH).
 #
 # Handles existing directories:
 #   • Same remote  → git pull
@@ -28,7 +29,7 @@ _err()   { printf '\033[1;31m[ ERR]\033[0m  %s\n' "$*"; }
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-NVIM_REPO_SSH="git@github.com:rakeshkandhi/nvim.git"
+NVIM_REPO_SSH="git@github.com-rakesh-kandhi:rakeshkandhi/nvim.git"
 NVIM_REPO_HTTPS="https://github.com/rakeshkandhi/nvim.git"
 NVIM_CONFIG_DIR="${HOME}/.config/nvim"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
@@ -43,13 +44,17 @@ get_remote_url() {
     git -C "${dir}" remote get-url origin 2>/dev/null || echo ""
 }
 
-# Normalise git URLs for comparison (strip protocol prefix, .git suffix, lowercase)
+# Normalise git URLs for comparison (strip protocol/host prefix, .git suffix,
+# lowercase). Strips ANY `user@host:` SSH prefix — not just the literal
+# github.com host — so an SSH config alias (e.g. github.com-rakesh-kandhi,
+# used for this machine's two-GitHub-account push access) still compares
+# equal to a plain git@github.com: or https://github.com/ remote.
 normalise_url() {
     local url="$1"
     url="${url%.git}"
-    url="${url#git@github.com:}"
     url="${url#https://github.com/}"
     url="${url#http://github.com/}"
+    url="$(echo "${url}" | sed -E 's#^[^@/]+@[^:/]+:##')"
     echo "${url}" | tr '[:upper:]' '[:lower:]'
 }
 
