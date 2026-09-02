@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Yank current path** (`Ctrl-a y`): tmux-yank's path yank moved from `Y` to `y`, replacing its command-line yank.
 - **`.env` → Shell Filetype** (`~/.config/nvim/lua/config/autocmds.lua`): Added autocmd so `.env`, `.env.local`, `.env.production`, `.env.development`, etc. open with `sh` filetype — enabling `bashls` LSP, Treesitter shell highlighting, `conform.nvim` formatting, `shellcheck` linting, and correct `#` comments.
 
+### Fixed
+- **Clipboard now works over SSH** (`scripts/tmux_copy.sh`, `tmux/tmux.conf`): yanking used to fail with `xclip: Can't open display` on a headless or SSH session — `Ctrl-a g` surfaced it as a `returned 1` error, while copy-mode `y` and `Ctrl-a y` failed silently. Every copy now goes through one helper that writes the tmux buffer and emits an OSC 52 escape sequence (reaching the clipboard of the machine you're sitting at), then falls back to a native tool only when a display is actually reachable.
+- **`scripts/setup_nvim.sh`** — `install.sh` no longer fails at "Setup Neovim Config" when `~/.config/nvim` has local changes (typically `lazy-lock.json` after a plugin update): the pull now uses `--autostash` and reports a clear error if it still cannot rebase.
+
 ### Changed
 - **`tmux/tmux.conf`** — Clipboard command (`pbcopy` / `xclip`) is now stored once in the `@clipboard` user option and shared by all clipboard bindings.
 - **`SHORTCUTS.md`** — Restored and fully expanded with all previously missing shortcuts:
