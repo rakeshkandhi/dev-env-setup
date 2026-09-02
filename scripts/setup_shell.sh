@@ -15,6 +15,7 @@
 #   • fzf eval / sourced key-bindings (Ctrl-T, Ctrl-R, Alt-C, ** completion)
 #   • vf   — fuzzy-find file(s) with preview, open in nvim
 #   • fcd  — fuzzy cd into a directory
+#   • fbr  — fuzzy-find and checkout a git branch
 #   • fkill — fuzzy-select and kill process(es)
 #   • Linux: ~/.local/bin on PATH, starship init bash
 # ==============================================================================
@@ -252,6 +253,24 @@ fcd() {
     dir="\$(find "\${start}" -type d 2>/dev/null | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
   fi || return
   [ -n "\${dir}" ] && cd "\${dir}"
+}
+
+# fbr — fuzzy-find a git branch (local + remote) and check it out
+#   fbr           pick a branch; checking out a remote-only one tracks it
+fbr() {
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "fbr: not a git repository" >&2; return 1; }
+  local branch
+  branch="\$(git for-each-ref --sort=-committerdate refs/heads/ refs/remotes/ \\
+      --format='%(refname) %(refname:short)' \\
+    | awk '\$1 !~ /\\/HEAD\$/ {print \$2}' \\
+    | fzf --preview 'git log --color=always --oneline --graph --date=short --pretty=format:"%C(auto)%h %ad %s" {} | head -200' \\
+          --preview-window=right:60%:wrap)" || return
+  [ -z "\${branch}" ] && return
+  if git show-ref --verify --quiet "refs/heads/\${branch}"; then
+    git checkout "\${branch}"
+  else
+    git checkout --track "\${branch}" 2>/dev/null || git checkout "\${branch#*/}"
+  fi
 }
 
 # fkill — fuzzy-select process(es) and kill them

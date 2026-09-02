@@ -283,6 +283,7 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `vf <query>` | Same, but start with a pre-filtered query |
 | `fcd` | Fuzzy-find a directory → `cd` into it |
 | `fcd <path>` | Same, searching under a specific `<path>` |
+| `fbr` | Fuzzy-find a git branch (local + remote) → check it out |
 | `fkill` | Fuzzy-pick process(es) → `kill -9` them |
 | `fkill 15` | Same, but send `SIGTERM` (`kill -15`) |
 
