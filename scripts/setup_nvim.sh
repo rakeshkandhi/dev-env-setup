@@ -73,9 +73,14 @@ main() {
 
             if [[ "$(normalise_url "${current_remote}")" == "$(normalise_url "${NVIM_REPO_SSH}")" ]]; then
                 _info "Existing nvim config points to the correct repo — pulling latest …"
-                git -C "${NVIM_CONFIG_DIR}" pull --rebase --quiet
-                _ok "Neovim config updated (git pull)"
-                return 0
+                # --autostash: lazy.nvim rewrites lazy-lock.json on plugin updates,
+                # so the tree is often dirty; stash around the rebase and reapply.
+                if git -C "${NVIM_CONFIG_DIR}" pull --rebase --autostash --quiet; then
+                    _ok "Neovim config updated (git pull)"
+                    return 0
+                fi
+                _err "git pull failed in ${NVIM_CONFIG_DIR} — resolve it manually (git -C ${NVIM_CONFIG_DIR} status)"
+                return 1
             else
                 _warn "Existing nvim config points to a different remote: ${current_remote}"
                 backup_dir "${NVIM_CONFIG_DIR}"
