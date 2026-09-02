@@ -132,6 +132,16 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 
 > 💡 Inside Telescope file picker: `Ctrl-y` (Insert mode) or `y` (Normal mode) copies the selected file path to clipboard.
 
+### 🗂️ File Explorer (native `netrw`, no plugin)
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Space e` | **Toggle** tree-view file explorer in a left split |
+| `Enter` | Open file **in the previous window** (explorer stays open) |
+| `%` | **Create a new file** — opens it in the previous window too |
+| `d` | Create a new **directory** |
+| `-` | Go **up** a directory |
+
 ### 📂 Buffer Navigation (Top Tab Bar)
 
 | Shortcut | Action |
