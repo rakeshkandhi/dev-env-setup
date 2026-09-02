@@ -12,6 +12,8 @@
 # Added configuration:
 #   • export EDITOR="nvim" / VISUAL="nvim"
 #   • alias v="nvim" / t="tmux"
+#   • Dynamic terminal title (Alacritty OSC 0: process · cwd, including outside tmux)
+#   • Option/Alt + Left/Right — jump by word (emacs keymap; EDITOR=nvim would otherwise enable vi)
 #   • fzf eval / sourced key-bindings (Ctrl-T, Ctrl-R, Alt-C, ** completion)
 #   • vf   — fuzzy-find file(s) with preview, open in nvim
 #   • fcd  — fuzzy cd into a directory
@@ -164,6 +166,112 @@ fi
 EOF
 }
 
+# Alacritty (and other terminals) only change the window title when the
+# shell emits OSC 0/2. Inside tmux the outer title is owned by tmux
+# set-titles (see tmux.conf), so these hooks no-op when $TMUX is set.
+terminal_title_block() {
+    local sh="$1"
+    if [[ "${sh}" == "zsh" ]]; then
+        cat << 'EOF'
+# Dynamic terminal title (Alacritty window.dynamic_title = true).
+# Idle: zsh · cwd.  Running: process · cwd.
+# Inside tmux the outer title is owned by tmux set-titles (see tmux.conf).
+_dev_env_set_title() {
+  emulate -L zsh
+  local title="${1//[$'\x00'-$'\x1f']}"
+  printf '\033]0;%s\007' "${title}" > /dev/tty
+}
+_dev_env_title_precmd() {
+  emulate -L zsh
+  [[ -n "${TMUX:-}" ]] && return
+  _dev_env_set_title "zsh · ${PWD/#${HOME}/~}"
+}
+_dev_env_title_preexec() {
+  emulate -L zsh
+  [[ -n "${TMUX:-}" ]] && return
+  local cmd="${1%% *}"
+  cmd="${cmd:t}"
+  _dev_env_set_title "${cmd} · ${PWD/#${HOME}/~}"
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook -d precmd _dev_env_title_precmd 2>/dev/null || true
+add-zsh-hook -d preexec _dev_env_title_preexec 2>/dev/null || true
+add-zsh-hook precmd _dev_env_title_precmd
+add-zsh-hook preexec _dev_env_title_preexec
+EOF
+    else
+        cat << 'EOF'
+# Dynamic terminal title (Alacritty window.dynamic_title = true).
+# Idle: bash · cwd.  Running: process · cwd (DEBUG trap).
+# Inside tmux the outer title is owned by tmux set-titles (see tmux.conf).
+_dev_env_tilde_pwd() {
+  local dir="${PWD}"
+  if [ "${dir}" = "${HOME}" ]; then
+    printf '~'
+  else
+    case "${dir}" in
+      "${HOME}"/*) printf '~%s' "${dir#"${HOME}"}" ;;
+      *) printf '%s' "${dir}" ;;
+    esac
+  fi
+}
+_dev_env_set_title() {
+  printf '\033]0;%s\007' "$1" > /dev/tty
+}
+_dev_env_title_prompt() {
+  [ -n "${TMUX:-}" ] && return
+  _dev_env_set_title "bash · $(_dev_env_tilde_pwd)"
+}
+_dev_env_title_debug() {
+  [ -n "${TMUX:-}" ] && return
+  [ -n "${COMP_LINE:-}" ] && return
+  case "${BASH_COMMAND}" in
+    _dev_env_title_*|_dev_env_set_title*|_dev_env_tilde_pwd*) return ;;
+  esac
+  local cmd="${BASH_COMMAND%% *}"
+  cmd="${cmd##*/}"
+  _dev_env_set_title "${cmd} · $(_dev_env_tilde_pwd)"
+}
+case ";${PROMPT_COMMAND:-};" in
+  *"_dev_env_title_prompt"*) ;;
+  *) PROMPT_COMMAND="_dev_env_title_prompt${PROMPT_COMMAND:+;}${PROMPT_COMMAND:-}" ;;
+esac
+trap '_dev_env_title_debug' DEBUG
+EOF
+    fi
+}
+
+# Option/Alt + Left/Right jump-by-word. bindkey -e must run before fzf so
+# fzf's widgets land on the emacs map (EDITOR=nvim would otherwise select vi).
+word_nav_block() {
+    local sh="$1"
+    if [[ "${sh}" == "zsh" ]]; then
+        cat << 'EOF'
+# Emacs line editing so Option+Left/Right works. EDITOR=nvim contains "vi"
+# and would otherwise put zsh in viins, where those keys do nothing.
+bindkey -e
+# CSI 1;3X = Alt+arrow (Alacritty native), CSI 1;5X = Ctrl+arrow,
+# ESC f/b = the chars alacritty.toml emits so the binding survives tmux.
+bindkey "^[[1;3C" forward-word
+bindkey "^[[1;3D" backward-word
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
+bindkey "^[f"     forward-word
+bindkey "^[b"     backward-word
+EOF
+    else
+        cat << 'EOF'
+# Option/Alt + Left/Right — jump by word (and Ctrl+arrow).
+bind '"\e[1;3C": forward-word'
+bind '"\e[1;3D": backward-word'
+bind '"\e[1;5C": forward-word'
+bind '"\e[1;5D": backward-word'
+bind '"\ef": forward-word'
+bind '"\eb": backward-word'
+EOF
+    fi
+}
+
 # Assemble the managed rc block. Placeholders are replaced here so the
 # written ~/.zshrc / ~/.bashrc actually contains fzf + starship init.
 build_config_block() {
@@ -171,6 +279,12 @@ build_config_block() {
 
     local fzf_block
     fzf_block="$(fzf_integration_block "${sh}")"
+
+    local title_block
+    title_block="$(terminal_title_block "${sh}")"
+
+    local nav_block
+    nav_block="$(word_nav_block "${sh}")"
 
     local starship_block=""
     if [[ "${OS_TYPE}" == "linux" ]]; then

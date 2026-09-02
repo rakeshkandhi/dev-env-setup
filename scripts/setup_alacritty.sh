@@ -156,6 +156,18 @@ style = "Bold Italic"
 key = "D"
 mods = "Command"
 chars = "\u0004"
+
+# Option+Left / Option+Right — jump by word (ESC b / ESC f).
+# Explicit chars survive tmux; option_as_alt alone sends CSI that zsh/tmux drop.
+[[keyboard.bindings]]
+key = "Left"
+mods = "Alt"
+chars = "\u001bb"
+
+[[keyboard.bindings]]
+key = "Right"
+mods = "Alt"
+chars = "\u001bf"
 EOF
     _ok "Created default Alacritty config at ${target_dir}/alacritty.toml"
 }
