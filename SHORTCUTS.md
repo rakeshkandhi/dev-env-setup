@@ -144,18 +144,6 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 | `d` | Create a new **directory** |
 | `-` | Go **up** a directory |
 
-### 📂 Buffer Navigation (Top Tab Bar)
-
-| Shortcut | Action |
-| :--- | :--- |
-| `Shift-H` | Go to **Previous Buffer** |
-| `Shift-L` | Go to **Next Buffer** |
-| `Space bp` | **Toggle Pin** current buffer |
-| `Space bo` | Close all **Other** buffers |
-| `Space bl` | Close all buffers to the **Left** |
-| `Space br` | Close all buffers to the **Right** |
-| `Space bP` | Close all **non-pinned** buffers |
-
 ### 🧠 Code Navigation & LSP
 
 | Shortcut | Action |
