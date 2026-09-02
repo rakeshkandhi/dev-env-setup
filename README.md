@@ -203,10 +203,12 @@ Copying works everywhere, pasting works anywhere:
 | Action | Result |
 | :--- | :--- |
 | Yank in Neovim (`y`) | → system clipboard (`unnamedplus`) |
-| Yank in tmux copy mode | → system clipboard (`pbcopy` / `xclip`) |
+| Yank in tmux copy mode | → system clipboard (`pbcopy` / `xclip`, or OSC 52 over SSH) |
 | `Ctrl-a g` in tmux | → current git branch name to system clipboard |
 | `Ctrl-a y` in tmux | → current directory path to system clipboard |
 | Paste | `Cmd+V` (macOS) or `Ctrl+Shift+V` (Linux) |
+
+Over SSH there is no local X display, so tmux hands copied text to your terminal with an OSC 52 escape sequence and it lands on the clipboard of the machine you're sitting at. Needs a terminal that supports OSC 52 (Alacritty, kitty, WezTerm, iTerm2); the Linux virtual console does not.
 
 ### Catppuccin Mocha Theme
 

@@ -87,7 +87,7 @@ The same keys work identically in tmux panes **and** Neovim splits — no mode s
 
 ## 📋 4. Copy Mode & Clipboard
 
-Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / `xclip` on Linux).
+Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / `xclip` on Linux). Over SSH, tmux falls back to an **OSC 52** escape sequence so yanks still reach the clipboard of the machine you're sitting at.
 
 ### tmux Copy Mode (Vi-style)
 

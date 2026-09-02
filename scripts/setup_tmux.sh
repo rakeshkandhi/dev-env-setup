@@ -5,6 +5,7 @@
 # • Symlinks repo tmux.conf     → ~/.config/tmux/tmux.conf
 # • Symlinks repo themes/       → ~/.config/tmux/themes
 # • Creates legacy symlink       → ~/.tmux.conf → ~/.config/tmux/tmux.conf
+# • Symlinks tmux_copy.sh        → ~/.local/bin/tmux-copy
 # • Installs TPM (Tmux Plugin Manager)
 # ==============================================================================
 set -euo pipefail
@@ -99,7 +100,13 @@ main() {
         safe_symlink "${SCRIPT_DIR}/tmux_sessionizer.sh" "${HOME}/.local/bin/tmux-sessionizer"
     fi
 
-    # 4. Install TPM
+    # 5. Install tmux-copy clipboard helper to ~/.local/bin
+    if [[ -f "${SCRIPT_DIR}/tmux_copy.sh" ]]; then
+        chmod +x "${SCRIPT_DIR}/tmux_copy.sh"
+        safe_symlink "${SCRIPT_DIR}/tmux_copy.sh" "${HOME}/.local/bin/tmux-copy"
+    fi
+
+    # 6. Install TPM
     if [[ -d "${TPM_DIR}/.git" ]]; then
         _ok "TPM already installed at ${TPM_DIR}"
         _info "Updating TPM …"
@@ -121,7 +128,7 @@ main() {
         _ok "TPM installed"
     fi
 
-    # 5. Auto-install plugins non-interactively via TPM
+    # 7. Auto-install plugins non-interactively via TPM
     if [[ -f "${TPM_DIR}/bin/install_plugins" ]]; then
         _info "Installing tmux plugins non-interactively via TPM …"
         "${TPM_DIR}/bin/install_plugins" || true
