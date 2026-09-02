@@ -283,7 +283,10 @@ Both tmux and Neovim sync with the **OS system clipboard** (`pbcopy` on macOS / 
 | `vf <query>` | Same, but start with a pre-filtered query |
 | `fcd` | Fuzzy-find a directory → `cd` into it |
 | `fcd <path>` | Same, searching under a specific `<path>` |
-| `fbr` | Fuzzy-find a git branch (local + remote) → check it out |
+| `fbr` | Fuzzy-find a git branch (local + remote) → check it out; already checked out in another worktree? switches there instead |
+| `fwt` | Fuzzy-switch between existing git worktrees (path + branch shown) |
+| `fwa` | Fuzzy-pick a branch → create a worktree for it and `cd` in |
+| `fwa <branch>` | Same, for a specific (existing or brand-new) branch |
 | `fkill` | Fuzzy-pick process(es) → `kill -9` them |
 | `fkill 15` | Same, but send `SIGTERM` (`kill -15`) |
 

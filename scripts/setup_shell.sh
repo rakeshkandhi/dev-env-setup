@@ -15,7 +15,9 @@
 #   • fzf eval / sourced key-bindings (Ctrl-T, Ctrl-R, Alt-C, ** completion)
 #   • vf   — fuzzy-find file(s) with preview, open in nvim
 #   • fcd  — fuzzy cd into a directory
-#   • fbr  — fuzzy-find and checkout a git branch
+#   • fbr  — fuzzy-find and checkout a git branch (worktree-aware)
+#   • fwt  — fuzzy-switch between existing git worktrees
+#   • fwa  — create a git worktree for a branch, cd into it
 #   • fkill — fuzzy-select and kill process(es)
 #   • Linux: ~/.local/bin on PATH, starship init bash
 # ==============================================================================
@@ -255,22 +257,88 @@ fcd() {
 }
 
 # fbr — fuzzy-find a git branch (local + remote) and check it out
-#   fbr           pick a branch; checking out a remote-only one tracks it
+#   fbr           pick a branch; checking out a remote-only one tracks it;
+#                 already checked out in another worktree? cd there instead
 fbr() {
   git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "fbr: not a git repository" >&2; return 1; }
-  local branch
+  local branch local_name wt_path
   branch="\$(git for-each-ref --sort=-committerdate refs/heads/ refs/remotes/ \\
       --format='%(refname) %(refname:short)' \\
-    | awk '\$1 !~ /\\/HEAD\$/ {print \$2}' \\
+    | awk '\$1 !~ /\/HEAD\$/ {print \$2}' \\
     | fzf --preview 'git log --color=always --oneline --graph --date=short --pretty=format:"%C(auto)%h %ad %s" {} | head -200' \\
           --preview-window=right:60%:wrap)" || return
   [ -z "\${branch}" ] && return
+
   if git show-ref --verify --quiet "refs/heads/\${branch}"; then
+    local_name="\${branch}"
+  else
+    local_name="\${branch#*/}"
+  fi
+
+  wt_path="\$(git worktree list --porcelain \\
+    | awk -v want="refs/heads/\${local_name}" '/^worktree /{wt=\$2} /^branch /{if (\$2==want) print wt}')"
+
+  if [ -n "\${wt_path}" ] && [ "\${wt_path}" != "\$(git rev-parse --show-toplevel)" ]; then
+    echo "'\${local_name}' is checked out in another worktree — switching there:"
+    cd "\${wt_path}"
+  elif [ "\${local_name}" = "\${branch}" ]; then
     git checkout "\${branch}"
   else
-    git checkout --track "\${branch}" 2>/dev/null || git checkout "\${branch#*/}"
+    git checkout --track "\${branch}" 2>/dev/null || git checkout "\${local_name}"
   fi
 }
+
+# fwt — fuzzy-switch between existing git worktrees (path, HEAD, branch shown)
+#   fwt           pick a worktree from `git worktree list` and cd into it
+fwt() {
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "fwt: not a git repository" >&2; return 1; }
+  local line dir
+  line="\$(git worktree list \\
+    | fzf --preview 'git -C {1} log --color=always --oneline --graph --date=short --pretty=format:"%C(auto)%h %ad %s" | head -200' \\
+          --preview-window=right:60%:wrap)" || return
+  [ -z "\${line}" ] && return
+  dir="\$(awk '{print \$1}' <<< "\${line}")"
+  cd "\${dir}"
+}
+
+# fwa — create a git worktree for a branch and cd into it, printing the command
+#   fwa            pick an existing branch (fuzzy) to give its own worktree
+#   fwa <branch>   worktree an existing branch, or a brand-new one, by name
+fwa() {
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "fwa: not a git repository" >&2; return 1; }
+  local branch="\${1:-}"
+  if [ -z "\${branch}" ]; then
+    branch="\$(git for-each-ref --sort=-committerdate refs/heads/ refs/remotes/ \\
+        --format='%(refname) %(refname:short)' \\
+      | awk '\$1 !~ /\/HEAD\$/ {print \$2}' \\
+      | fzf --preview 'git log --color=always --oneline --graph --date=short --pretty=format:"%C(auto)%h %ad %s" {} | head -200' \\
+            --preview-window=right:60%:wrap)" || return
+    [ -z "\${branch}" ] && return
+  fi
+
+  local main_root worktrees_dir local_name path
+  local -a cmd
+  main_root="\$(git worktree list --porcelain | awk '/^worktree /{print \$2; exit}')"
+  worktrees_dir="\$(dirname "\${main_root}")/\$(basename "\${main_root}").worktrees"
+
+  if git show-ref --verify --quiet "refs/heads/\${branch}"; then
+    local_name="\${branch}"
+    path="\${worktrees_dir}/\${local_name//\//-}"
+    cmd=(git worktree add "\${path}" "\${branch}")
+  elif git show-ref --verify --quiet "refs/remotes/\${branch}"; then
+    local_name="\${branch#*/}"
+    path="\${worktrees_dir}/\${local_name//\//-}"
+    cmd=(git worktree add --track -b "\${local_name}" "\${path}" "\${branch}")
+  else
+    path="\${worktrees_dir}/\${branch//\//-}"
+    cmd=(git worktree add -b "\${branch}" "\${path}")
+  fi
+
+  mkdir -p "\${worktrees_dir}"
+  echo "+ \${cmd[*]}"
+  "\${cmd[@]}" && cd "\${path}"
+}
+
 
 # fkill — fuzzy-select process(es) and kill them
 #   fkill         SIGKILL (9)
