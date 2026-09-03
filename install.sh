@@ -295,6 +295,23 @@ main() {
     run_step "shell"     "${SCRIPTS}/setup_shell.sh"        "Setup Shell Environment & Aliases"
 
     # ------------------------------------------------------------------
+    # Post-Install: Clean Caches & Reload
+    # ------------------------------------------------------------------
+    if [[ "${DRY_RUN}" == false ]]; then
+        _step "Cleaning Caches & Reloading"
+        
+        _info "Deleting Neovim cache (~/.cache/nvim)..."
+        rm -rf ~/.cache/nvim
+        RESULTS+=("${GREEN} ✓  ${RESET}  Clean Neovim Cache")
+        
+        if command -v tmux >/dev/null 2>&1 && tmux info &> /dev/null; then
+            _info "Reloading tmux configuration..."
+            tmux source-file ~/.tmux.conf 2>/dev/null || tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null
+            RESULTS+=("${GREEN} ✓  ${RESET}  Reload tmux Config")
+        fi
+    fi
+
+    # ------------------------------------------------------------------
     # Summary
     # ------------------------------------------------------------------
     echo ""
