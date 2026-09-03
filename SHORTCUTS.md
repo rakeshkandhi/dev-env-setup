@@ -146,12 +146,27 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 
 ### 🧠 Code Navigation & LSP
 
+#### Built-in LSP Defaults (Neovim 0.11+)
+
+These keymaps work out of the box with no configuration:
+
+| Shortcut | Action |
+| :--- | :--- |
+| `grn` | **Rename** symbol |
+| `gra` | **Code Action** / Quick Fix (Normal & Visual) |
+| `grr` | **Go to References** |
+| `gri` | **Go to Implementation** |
+| `gO` | **Document Symbols** / Table of Contents |
+| `Ctrl-S` (Insert mode) | **Signature Help** |
+
+#### Custom Keymaps
+
 | Shortcut | Action |
 | :--- | :--- |
 | `gd` | **Go to Definition** (Telescope picker) |
 | `gr` | **Go to References** (Telescope picker) |
-| `gi` | **Go to Implementation** |
-| `gt` | **Go to Type Definition** |
+| `gi` | **Go to Implementation** (Telescope picker) |
+| `gt` | **Go to Type Definition** (Telescope picker) |
 | `K` | **Hover Documentation** (rounded float window) |
 | `Space rn` | **Rename** symbol across entire workspace |
 | `Space ca` | **Code Action** / Quick Fix / CSpell word fix |
@@ -161,7 +176,7 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 | `Alt + ←` | **Jump Back** in jump list (`C-o`) |
 | `Alt + →` | **Jump Forward** in jump list (`C-i`) |
 
-> 💡 LSP servers/formatters/linters are installed by `dev-env-setup`'s `install_deps.sh` (not Mason): `pyright`, `ts_ls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `yamlls`, `bashls`, `clangd`, `lua_ls`, `cspell_ls`.
+> 💡 LSP server configs live in native `lsp/*.lua` directory files (Neovim 0.11+ auto-discovery), no `nvim-lspconfig`. Servers/formatters/linters are installed by `dev-env-setup`'s `install_deps.sh` (not Mason): `pyright`, `ts_ls`, `html`, `cssls`, `tailwindcss`, `jsonls`, `yamlls`, `bashls`, `clangd`, `lua_ls`, `cspell_ls`.
 
 ### ✍️ Autocompletion (native `vim.lsp.completion`, no plugin)
 
@@ -173,7 +188,34 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 | `Ctrl-e` | **Dismiss / abort** completion menu |
 | `Ctrl-x Ctrl-o` | **Force-trigger** completion manually (rarely needed) |
 
-> 💡 No snippet engine — LSP-provided snippets insert as plain text (no `$1`/`$2` placeholder-jumping).
+### 🧩 Snippets (built-in `vim.snippet`, 0.10+)
+
+| Shortcut | Action | Mode |
+| :--- | :--- | :--- |
+| `Tab` | Jump to **next** snippet tabstop | Insert, Select |
+| `Shift-Tab` | Jump to **previous** snippet tabstop | Insert, Select |
+
+> 💡 LSP-provided snippets expand with placeholder jumping (`$1`/`$2` tabstops) — use `Tab`/`Shift-Tab` to navigate through them.
+
+### 📁 Code Folding (treesitter-powered, async)
+
+| Shortcut | Action |
+| :--- | :--- |
+| `za` | **Toggle** fold under cursor |
+| `zo` | **Open** fold under cursor |
+| `zc` | **Close** fold under cursor |
+| `zR` | **Open all** folds in file |
+| `zM` | **Close all** folds in file |
+
+> 💡 Folding uses `vim.treesitter.foldexpr()` — folds are syntax-aware (function bodies, class blocks, etc.), not indentation-based. Starts with all folds open.
+
+### 🔎 Inlay Hints & Toggles
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Space ti` | Toggle **LSP inlay hints** (type annotations, parameter names) |
+| `Space tb` | Toggle **inline Git blame** on current line |
+| `Space ?` | Show **all buffer-local keymaps** in which-key popup |
 
 ### 🖊️ Formatting & Linting (native, no conform.nvim)
 
@@ -183,7 +225,7 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 | _On save_ | **Auto-format**: `lua` → `stylua` · `python` → `ruff format` · `js/ts/jsx/tsx/json/jsonc/css/html/yaml/markdown` → `prettier` |
 | _On save / enter / leave insert_ | **Auto-lint**: `python` → `ruff` · `js/ts/jsx/tsx` → `eslint_d` |
 
-### 💬 Comments (Neovim built-in)
+### 💬 Comments (Neovim built-in, 0.10+)
 
 | Shortcut | Action | Mode |
 | :--- | :--- | :--- |
@@ -192,7 +234,7 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 | `gcA` | Add comment at **end of line** | Normal |
 | `gco` / `gcO` | Add comment **below / above** current line | Normal |
 
-> 💡 Uses each buffer's own `commentstring` (`--` in Lua, `#` in Python/shell, `//` in JS/TS, etc). No longer context-aware within a single file across embedded languages (e.g. JS inside `.vue`/`.astro`) — `nvim-ts-context-commentstring` was dropped as part of the native-plugin trim.
+> 💡 Uses each buffer's own `commentstring` (`--` in Lua, `#` in Python/shell, `//` in JS/TS, etc).
 
 ### ✏️ Line & Selection Editing
 
@@ -204,12 +246,6 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 
 > 💡 **Mac Users**: `option_as_alt = "Both"` is set in Alacritty — your Mac `Option` key acts as `Alt` for `Alt+j` / `Alt+k`.
 
-### 🔑 which-key
-
-| Shortcut | Action |
-| :--- | :--- |
-| `Space ?` | Show **all buffer-local keymaps** in a popup |
-| _Any `Space` prefix_ | which-key popup appears automatically showing available continuations |
 
 ### 🌿 Git Integration (Gitsigns & Telescope)
 
@@ -301,9 +337,15 @@ A persistent left sidebar (like nvim-tree/neo-tree) — picking a file opens it 
 | **Clipboard Sync** | tmux copy mode + Neovim yanks both write to OS system clipboard |
 | **Relative Line Numbers** | `relativenumber = true` — jump distances shown instantly beside every line |
 | **Scroll Context** | `scrolloff = 8` — always 8 lines of context above/below cursor |
+| **Smooth Scrolling** | `smoothscroll = true` — pixel-smooth `Ctrl-D`/`Ctrl-U` scrolling (0.10+) |
+| **Sign Column** | `signcolumn = "yes"` — always visible, no layout shift from diagnostics |
 | **Persistent Undo** | `undofile = true` — undo history survives closing Neovim |
 | **Smart Search** | `ignorecase` + `smartcase` — case-insensitive unless you type a capital |
 | **Treesitter Auto-install** | `auto_install = true` — parsers install automatically for any new filetype |
+| **Treesitter Folding** | `vim.treesitter.foldexpr()` — syntax-aware async code folding (0.11+) |
+| **LSP Inlay Hints** | `Space ti` toggles inline type annotations & parameter names (0.10+) |
+| **Snippet Engine** | Built-in `vim.snippet` with `Tab`/`Shift-Tab` tabstop navigation (0.10+) |
+| **Native LSP Config** | Server configs in `lsp/*.lua` directory files (0.11+), no `nvim-lspconfig` |
 | **Code Spell Check** | `cspell_ls` LSP flags misspellings as diagnostics — fix via `Space ca` |
 | **Spellcheck in prose** | Spell check auto-enabled for `markdown`, `text`, `gitcommit` buffers |
 | **`.env` → shell filetype** | `.env`, `.env.local`, `.env.production` etc. open with `sh` syntax & LSP |
