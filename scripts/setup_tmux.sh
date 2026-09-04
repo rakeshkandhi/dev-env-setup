@@ -7,6 +7,7 @@
 # • Creates legacy symlink       → ~/.tmux.conf → ~/.config/tmux/tmux.conf
 # • Symlinks tmux_copy.sh        → ~/.local/bin/tmux-copy
 # • Installs TPM (Tmux Plugin Manager)
+# • Clears stale session-local status-left/right on any running sessions
 # ==============================================================================
 set -euo pipefail
 
@@ -133,6 +134,50 @@ main() {
         _info "Installing tmux plugins non-interactively via TPM …"
         "${TPM_DIR}/bin/install_plugins" || true
         _ok "tmux plugins installed"
+    fi
+
+    # 8. Clear stale session-local status-left/status-right
+    #
+    # Session-local options shadow the global ones this config sets, so a
+    # stale local value pins the status bar to an old theme no matter how
+    # many times tmux.conf is re-sourced.
+    #
+    # vim-tpipeline is what leaves them behind: with g:tpipeline_restore set
+    # it snapshots status-left/right when Neovim starts and writes the
+    # snapshot back on exit via `tmux set` — no -g, so the write lands on
+    # the session. Sessions outlive theme changes; the snapshot doesn't.
+    #
+    # Unsetting is safe: the global value always provides the fallback. Skip
+    # sessions with Neovim running, where the local value is tpipeline's live
+    # statusline rather than a leftover — the value alone can't tell the two
+    # apart, since a dead Neovim leaves an identical-looking string behind.
+    if command -v tmux &>/dev/null && tmux list-sessions &>/dev/null; then
+        _info "Clearing stale session-local status options …"
+        local cleared=0
+        local session value opt
+        while IFS= read -r session; do
+            if tmux list-panes -s -t "${session}" -F '#{pane_current_command}' 2>/dev/null \
+                | grep -qxE 'n?vim'; then
+                _warn "Skipping ${session} — Neovim is running and driving its statusline"
+                continue
+            fi
+            for opt in status-left status-right; do
+                # Empty when the option is not set locally — nothing to clear.
+                value="$(tmux show -t "${session}" -v "${opt}" 2>/dev/null || true)"
+                [[ -n "${value}" ]] || continue
+                tmux set -t "${session}" -u "${opt}" 2>/dev/null || true
+                cleared=$((cleared + 1))
+            done
+        done < <(tmux list-sessions -F '#S' 2>/dev/null)
+
+        if (( cleared > 0 )); then
+            _ok "Cleared ${cleared} stale session-local status option(s)"
+        else
+            _ok "No stale session-local status options found"
+        fi
+
+        # Re-source so running sessions pick up the config just symlinked
+        tmux source-file "${TMUX_CONFIG_DIR}/tmux.conf" 2>/dev/null || true
     fi
 
     _ok "tmux setup complete"
