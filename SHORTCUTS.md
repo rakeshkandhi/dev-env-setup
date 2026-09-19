@@ -277,7 +277,60 @@ These keymaps work out of the box with no configuration:
 
 ---
 
-## 🔍 6. Shell — fzf & Aliases
+## 🖋️ 6. Vim Keybindings (standalone fallback)
+
+A lightweight `~/.vimrc` for machines without Neovim. Leader is also `Space`.
+
+### Quick Actions
+
+| Shortcut | Action | Mode |
+| :--- | :--- | :--- |
+| `Space w` | **Save** file (`:write`) | Normal |
+| `Space q` | **Quit** (`:quit`) | Normal |
+| `Space x` | **Save & Quit** (`:x`) | Normal |
+
+### Navigation & Scrolling
+
+| Shortcut | Action | Mode |
+| :--- | :--- | :--- |
+| `H` | Jump to **first non-blank** character of line | Normal |
+| `L` | Jump to **end of line** | Normal |
+| `Ctrl-d` | Scroll **down** half page (cursor stays centred) | Normal |
+| `Ctrl-u` | Scroll **up** half page (cursor stays centred) | Normal |
+| `n` / `N` | Next / Previous **search result** (centred) | Normal |
+| `Esc` | Clear **search highlights** | Normal |
+
+### Line & Selection Editing
+
+| Shortcut | Action | Mode |
+| :--- | :--- | :--- |
+| `J` | Move selection **Down** | Visual |
+| `K` | Move selection **Up** | Visual |
+| `<` | Indent **left** (keeps selection) | Visual |
+| `>` | Indent **right** (keeps selection) | Visual |
+
+### Command-line Shortcuts
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl-a` | Jump to **start** of command line |
+| `Ctrl-e` | Jump to **end** of command line |
+
+### Notable Settings
+
+| Feature | Detail |
+| :--- | :--- |
+| **Relative Line Numbers** | `relativenumber` enabled |
+| **Persistent Undo** | `undofile` in `~/.vim/undodir` — survives closing Vim |
+| **System Clipboard** | `clipboard=unnamed` — yanks go to OS clipboard |
+| **Mouse** | `mouse=a` — full mouse support |
+| **Scroll Context** | `scrolloff=8` — always 8 lines above/below cursor |
+| **Smart Search** | `ignorecase` + `smartcase` |
+| **Whitespace Indicators** | `list` + `listchars` — visible tabs, trailing spaces, nbsp |
+
+---
+
+## 🔍 7. Shell — fzf & Aliases
 
 ### Shell Aliases
 
@@ -325,7 +378,7 @@ These keymaps work out of the box with no configuration:
 
 ---
 
-## 🚀 7. Configuration Highlights & Behaviours
+## 🚀 8. Configuration Highlights & Behaviours
 
 | Feature | Detail |
 | :--- | :--- |
