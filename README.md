@@ -89,6 +89,7 @@ The install script performs the following in order:
 | **Dependencies** | Installs core tools via `brew` / `apt` / `dnf` / `pacman`: Neovim, tmux, ripgrep, fd, lazygit, and more |
 | **Fonts** | Downloads and installs **MesloLGS Nerd Font** from the [nerd-fonts](https://github.com/ryanoasis/nerd-fonts) releases |
 | **Neovim** | Clones [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) to `~/.config/nvim` (with HTTPS fallback) — Lazy.nvim auto-installs all plugins on first launch |
+| **Vim** | Symlinks [`vim/vimrc`](vim/vimrc) to `~/.vimrc` |
 | **tmux** | Symlinks tmux config to `~/.config/tmux/`, installs TPM, and auto-installs plugins non-interactively |
 | **Alacritty** | Symlinks Alacritty config to `~/.config/alacritty/` |
 | **Starship** | Installs **Starship prompt** (Linux only) and symlinks Catppuccin Mocha theme to `~/.config/starship.toml` |
@@ -126,7 +127,7 @@ cd /path/to/dev-env-setup
 | **Self-update** | Pulls the latest changes for this repo (`git pull`) |
 | **Neovim config** | Pulls the latest Neovim config (`git pull` in `~/.config/nvim`) |
 | **TPM & Plugins** | Updates TPM and auto-updates tmux plugins via `update_plugins all` |
-| **Symlinks** | Re-verifies symlinks for tmux and Alacritty configs |
+| **Symlinks** | Re-verifies symlinks for tmux, Alacritty, and Vim configs |
 | **Shell & Deps** | Re-applies shell aliases and updates dependencies if needed |
 
 ### 4. Post-update steps
@@ -143,6 +144,7 @@ Don't need everything? Target specific components:
 ```bash
 # Install only a specific component
 ./install.sh --only nvim       # Only setup Neovim
+./install.sh --only vim        # Only setup Vim
 ./install.sh --only tmux       # Only setup tmux
 ./install.sh --only alacritty  # Only setup Alacritty
 ./install.sh --only shell      # Only setup shell environment & aliases
@@ -154,6 +156,9 @@ Don't need everything? Target specific components:
 
 # Exclude Alacritty installation and config porting
 ./install.sh --no-alacritty   # (aliases: --skip-alacritty, --exclude-alacritty)
+
+# Exclude Vim setup
+./install.sh --no-vim         # (aliases: --skip-vim, --exclude-vim)
 
 # Exclude shell environment & aliases setup
 ./install.sh --no-shell       # (aliases: --skip-shell, --exclude-shell)
@@ -289,6 +294,8 @@ dev-env-setup/
 │   └── alacritty.toml      # Alacritty configuration
 ├── starship/
 │   └── starship.toml       # Catppuccin Mocha prompt theme (Linux)
+├── vim/
+│   └── vimrc               # Vim configuration (symlinked to ~/.vimrc)
 ├── tmux/
 │   ├── tmux.conf           # tmux configuration
 │   └── themes/
@@ -298,6 +305,7 @@ dev-env-setup/
     ├── install_deps.sh     # Dependency installation
     ├── install_fonts.sh    # MesloLGS Nerd Font installer
     ├── setup_nvim.sh       # Neovim config setup
+    ├── setup_vim.sh        # Vim config setup
     ├── setup_tmux.sh       # tmux config & TPM setup
     ├── setup_alacritty.sh  # Alacritty config setup
     ├── setup_starship.sh   # Starship prompt installer (Linux)
@@ -314,6 +322,7 @@ dev-env-setup/
 | Alacritty | `~/.config/alacritty/` | Symlink → this repo's `alacritty/` |
 | tmux | `~/.config/tmux/` | Symlink → this repo's `tmux/` |
 | Neovim | `~/.config/nvim/` | Git clone from [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) |
+| Vim | `~/.vimrc` | Symlink → this repo's `vim/vimrc` |
 | Starship | `~/.config/starship.toml` | Symlink → this repo's `starship/starship.toml` (Linux) |
 
 > **Why symlinks?** Editing configs in the repo automatically updates the live config. No copying, no drift.

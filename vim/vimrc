@@ -1,0 +1,89 @@
+let mapleader = " "
+let maplocalleader = " "
+
+set number
+set relativenumber
+
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+set smartindent
+set autoindent
+
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+
+set scrolloff=8
+set sidescrolloff=8
+
+set splitright
+set splitbelow
+
+set hidden
+set autoread
+
+set noswapfile
+set nobackup
+set nowritebackup
+
+set completeopt=menu,menuone,noselect
+set wildmenu
+set wildmode=longest:full,full
+
+set list
+set listchars=tab:→\ ,trail:·,extends:›,precedes:‹,nbsp:␣
+
+set signcolumn=no
+set termguicolors
+set showmode
+set laststatus=2
+set cmdheight=1
+set nocursorline
+set nocursorcolumn
+set nowrap
+
+set updatetime=250
+set timeoutlen=400
+set backspace=indent,eol,start
+set mouse=a
+set clipboard=unnamed
+set encoding=utf-8
+set fileencoding=utf-8
+
+set noerrorbells
+set novisualbell
+set shortmess+=I
+
+if has('persistent_undo')
+    set undofile
+    if !isdirectory(expand('~/.vim/undodir'))
+        call mkdir(expand('~/.vim/undodir'), 'p')
+    endif
+    set undodir=~/.vim/undodir
+endif
+
+nnoremap <Esc> :nohlsearch<CR>
+nnoremap <leader>w :write<CR>
+nnoremap <leader>q :quit<CR>
+nnoremap <leader>x :x<CR>
+
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+vnoremap < <gv
+vnoremap > >gv
+
+nnoremap H ^
+nnoremap L $
+
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+
+filetype plugin indent on

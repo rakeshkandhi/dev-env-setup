@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-08-19 01:29:00 +0530
 
 ### Added
+- **Vim config tracking** (`vim/vimrc`, `scripts/setup_vim.sh`): the local `~/.vimrc` is now in-repo and symlinked on install (`./install.sh --only vim`). Existing `~/.vimrc` files are timestamp-backed up before the symlink is created.
 - **Yank git branch** (`Ctrl-a g`, `tmux/tmux.conf`): copies the git branch of the active pane's directory to the system clipboard and the tmux paste buffer, with a status-line confirmation. 
 - **Yank current path** (`Ctrl-a y`): tmux-yank's path yank moved from `Y` to `y`, replacing its command-line yank.
 - **`.env` → Shell Filetype** (`~/.config/nvim/lua/config/autocmds.lua`): Added autocmd so `.env`, `.env.local`, `.env.production`, `.env.development`, etc. open with `sh` filetype — enabling `bashls` LSP, Treesitter shell highlighting, `conform.nvim` formatting, `shellcheck` linting, and correct `#` comments.
