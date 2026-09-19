@@ -57,7 +57,7 @@ print_banner() {
     ║                                                      ║
     ║         🔄  Dev Environment Updating  🔄             ║
     ║                                                      ║
-    ║   Alacritty  •  tmux  •  Neovim                      ║
+    ║   Alacritty  •  tmux  •  Vim  •  Neovim               ║
     ║   Catppuccin Mocha  •  MesloLGS Nerd Font            ║
     ║                                                      ║
     ╚══════════════════════════════════════════════════════╝
@@ -68,7 +68,7 @@ EOF
     ║                                                      ║
     ║          🚀  Dev Environment Setup  🚀               ║
     ║                                                      ║
-    ║   Alacritty  •  tmux  •  Neovim                      ║
+    ║   Alacritty  •  tmux  •  Vim  •  Neovim               ║
     ║   Catppuccin Mocha  •  MesloLGS Nerd Font            ║
     ║                                                      ║
     ╚══════════════════════════════════════════════════════╝

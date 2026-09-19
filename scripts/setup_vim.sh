@@ -2,12 +2,15 @@
 # ==============================================================================
 # setup_vim.sh — Vim Configuration Setup
 # ==============================================================================
-# Symlinks repo vim/vimrc → ~/.vimrc
+# Symlinks repo vim/vimrc → ~/.vimrc and ensures supporting directories exist.
 #
 # Handles an existing ~/.vimrc:
 #   • Already the correct symlink → no-op
 #   • Stale symlink               → replace
 #   • Regular file / directory    → timestamped backup, then symlink
+#
+# Creates:
+#   • ~/.vim/undodir  — persistent undo directory used by the vimrc
 # ==============================================================================
 set -euo pipefail
 
@@ -27,6 +30,7 @@ _err()   { printf '\033[1;31m[ ERR]\033[0m  %s\n' "$*"; }
 # ---------------------------------------------------------------------------
 VIM_RC_DST="${HOME}/.vimrc"
 REPO_VIMRC="${REPO_DIR}/vim/vimrc"
+VIM_UNDO_DIR="${HOME}/.vim/undodir"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 
 # ---------------------------------------------------------------------------
@@ -65,14 +69,28 @@ safe_symlink() {
 # Main
 # ---------------------------------------------------------------------------
 main() {
-    _info "Setting up Vim configuration …"
+    if [[ "${UPDATE_MODE:-false}" == true ]]; then
+        _info "Updating Vim configuration …"
+    else
+        _info "Setting up Vim configuration …"
+    fi
 
+    # 1. Validate source config exists
     if [[ ! -f "${REPO_VIMRC}" ]]; then
         _err "Vim config not found at ${REPO_VIMRC}"
         return 1
     fi
 
+    # 2. Symlink vimrc
     safe_symlink "${REPO_VIMRC}" "${VIM_RC_DST}"
+
+    # 3. Ensure persistent undo directory exists
+    if [[ ! -d "${VIM_UNDO_DIR}" ]]; then
+        mkdir -p "${VIM_UNDO_DIR}"
+        _ok "Created undo directory: ${VIM_UNDO_DIR}"
+    else
+        _ok "Undo directory already exists: ${VIM_UNDO_DIR}"
+    fi
 
     _ok "Vim setup complete"
 }
