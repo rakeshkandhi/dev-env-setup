@@ -19,10 +19,9 @@
 #   3. Install fonts
 #   4. Setup Neovim
 #   5. Setup Vim
-#   6. Setup tmux
-#   7. Setup Alacritty
-#   8. Setup Starship Prompt (Linux only)
-#   9. Setup Shell Environment & Aliases
+#   6. Setup Alacritty
+#   7. Setup Starship Prompt (Linux only)
+#   8. Setup Shell Environment & Aliases
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -57,7 +56,7 @@ print_banner() {
     ║                                                      ║
     ║         🔄  Dev Environment Updating  🔄             ║
     ║                                                      ║
-    ║   Alacritty  •  tmux  •  Vim  •  Neovim               ║
+    ║   Alacritty  •  Vim  •  Neovim                       ║
     ║   Catppuccin Mocha  •  MesloLGS Nerd Font            ║
     ║                                                      ║
     ╚══════════════════════════════════════════════════════╝
@@ -68,7 +67,7 @@ EOF
     ║                                                      ║
     ║          🚀  Dev Environment Setup  🚀               ║
     ║                                                      ║
-    ║   Alacritty  •  tmux  •  Vim  •  Neovim               ║
+    ║   Alacritty  •  Vim  •  Neovim                       ║
     ║   Catppuccin Mocha  •  MesloLGS Nerd Font            ║
     ║                                                      ║
     ╚══════════════════════════════════════════════════════╝
@@ -91,7 +90,7 @@ Commands:
 
 Options:
   --only <step>    Run only a specific step. Valid steps:
-                     deps, fonts, nvim, vim, tmux, alacritty, starship, shell
+                     deps, fonts, nvim, vim, alacritty, starship, shell
   --no-deps        Skip dependency installation
   --no-alacritty   Skip Alacritty setup & settings porting
                      (aliases: --skip-alacritty, --exclude-alacritty)
@@ -143,7 +142,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --only)
             if [[ -z "${2:-}" ]]; then
-                _err "--only requires a step name (deps|fonts|nvim|vim|tmux|alacritty|starship|shell)"
+                _err "--only requires a step name (deps|fonts|nvim|vim|alacritty|starship|shell)"
                 exit 1
             fi
             ONLY_STEP="$2"
@@ -190,10 +189,10 @@ export SKIP_ALACRITTY SKIP_STARSHIP SKIP_VIM SKIP_SHELL UPDATE_MODE
 # Validate --only step
 if [[ -n "${ONLY_STEP}" ]]; then
     case "${ONLY_STEP}" in
-        deps|fonts|nvim|vim|tmux|alacritty|starship|shell) ;;
+        deps|fonts|nvim|vim|alacritty|starship|shell) ;;
         *)
             _err "Invalid step: ${ONLY_STEP}"
-            _err "Valid steps: deps, fonts, nvim, vim, tmux, alacritty, starship, shell"
+            _err "Valid steps: deps, fonts, nvim, vim, alacritty, starship, shell"
             exit 1
             ;;
     esac
@@ -299,12 +298,11 @@ main() {
         export OS_TYPE LINUX_DISTRO PKG_MANAGER
     fi
 
-    # Steps 1–7
+    # Steps 1–6
     run_step "deps"      "${SCRIPTS}/install_deps.sh"      "Install Dependencies"
     run_step "fonts"     "${SCRIPTS}/install_fonts.sh"      "Install MesloLGS Nerd Font"
     run_step "nvim"      "${SCRIPTS}/setup_nvim.sh"         "Setup Neovim Config"
     run_step "vim"       "${SCRIPTS}/setup_vim.sh"          "Setup Vim Config"
-    run_step "tmux"      "${SCRIPTS}/setup_tmux.sh"         "Setup tmux Config & TPM"
     run_step "alacritty" "${SCRIPTS}/setup_alacritty.sh"    "Setup Alacritty Config"
     run_step "starship"  "${SCRIPTS}/setup_starship.sh"     "Setup Starship Prompt (Linux only)"
     run_step "shell"     "${SCRIPTS}/setup_shell.sh"        "Setup Shell Environment & Aliases"
@@ -318,12 +316,6 @@ main() {
         _info "Deleting Neovim cache (~/.cache/nvim)..."
         rm -rf ~/.cache/nvim
         RESULTS+=("${GREEN} ✓  ${RESET}  Clean Neovim Cache")
-        
-        if command -v tmux >/dev/null 2>&1 && tmux info &> /dev/null; then
-            _info "Reloading tmux configuration..."
-            tmux source-file ~/.tmux.conf 2>/dev/null || tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null
-            RESULTS+=("${GREEN} ✓  ${RESET}  Reload tmux Config")
-        fi
     fi
 
     # ------------------------------------------------------------------
@@ -345,16 +337,14 @@ main() {
             echo ""
             _info "Next steps:"
             echo "  1. Restart your terminal (or source your shell rc)"
-            echo "  2. Restart tmux to apply config changes"
-            echo "  3. Neovim plugins were already updated via vim.pack — run :lua vim.pack.update() any time to refresh them"
+            echo "  2. Neovim plugins were already updated via vim.pack — run :lua vim.pack.update() any time to refresh them"
             echo ""
         else
             _ok "Dev environment setup complete! 🎉"
             echo ""
             _info "Next steps:"
             echo "  1. Restart your terminal (or source your shell rc)"
-            echo "  2. Open tmux and press  prefix + I  to install plugins"
-            echo "  3. Open Neovim — plugins will auto-install on first launch"
+            echo "  2. Open Neovim — plugins will auto-install on first launch"
             echo ""
         fi
     fi

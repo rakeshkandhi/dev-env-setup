@@ -31,7 +31,7 @@ fi
 # Common packages across all platforms
 # Neovim is intentionally excluded — it's installed separately by install_neovim()
 # so we always get a current release instead of whatever an OS repo has cached.
-COMMON_PKGS=(git curl wget tmux ripgrep fzf fd lazygit)
+COMMON_PKGS=(git curl wget ripgrep fzf fd lazygit)
 
 # macOS-only (via Homebrew)
 BREW_EXTRAS=(node lua luarocks)

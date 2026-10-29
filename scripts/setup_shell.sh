@@ -11,7 +11,7 @@
 #
 # Added configuration:
 #   • export EDITOR="nvim" / VISUAL="nvim"
-#   • alias v="nvim" / t="tmux"
+#   • alias v="nvim"
 #   • Dynamic terminal title (Alacritty OSC 0: process · cwd, including outside tmux)
 #   • Option/Alt + Left/Right — jump by word (emacs keymap; EDITOR=nvim would otherwise enable vi)
 #   • fzf eval / sourced key-bindings (Ctrl-T, Ctrl-R, Alt-C, ** completion)
@@ -303,8 +303,6 @@ esac
 export EDITOR="nvim"
 export VISUAL="nvim"
 alias v="nvim"
-alias t="tmux"
-alias ta="tmux-sessionizer"
 
 # Ubuntu/Debian ships the fd binary as fdfind. Resolve the real binary name
 # *before* defining the alias: an \`fd\` alias makes \`command -v fd\` succeed, so
