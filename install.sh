@@ -90,12 +90,14 @@ Commands:
 
 Options:
   --only <step>    Run only a specific step. Valid steps:
-                     deps, fonts, nvim, vim, alacritty, starship, shell
+                     deps, fonts, nvim, vim, alacritty, starship, rex, shell
   --no-deps        Skip dependency installation
   --no-alacritty   Skip Alacritty setup & settings porting
                      (aliases: --skip-alacritty, --exclude-alacritty)
   --no-starship    Skip Starship prompt setup
                      (aliases: --skip-starship, --exclude-starship)
+  --no-rex         Skip Rex multiplexer setup
+                     (aliases: --skip-rex, --exclude-rex)
   --no-vim         Skip Vim setup
                      (aliases: --skip-vim, --exclude-vim)
   --no-shell       Skip shell environment & aliases setup
@@ -127,6 +129,7 @@ ONLY_STEP=""
 SKIP_DEPS=false
 SKIP_ALACRITTY=false
 SKIP_STARSHIP=false
+SKIP_REX=false
 SKIP_VIM=false
 SKIP_SHELL=false
 DRY_RUN=false
@@ -160,6 +163,10 @@ while [[ $# -gt 0 ]]; do
             SKIP_STARSHIP=true
             shift
             ;;
+        --no-rex|--skip-rex|--exclude-rex)
+            SKIP_REX=true
+            shift
+            ;;
         --no-vim|--skip-vim|--exclude-vim)
             SKIP_VIM=true
             shift
@@ -184,15 +191,15 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-export SKIP_ALACRITTY SKIP_STARSHIP SKIP_VIM SKIP_SHELL UPDATE_MODE
+export SKIP_ALACRITTY SKIP_STARSHIP SKIP_REX SKIP_VIM SKIP_SHELL UPDATE_MODE
 
 # Validate --only step
 if [[ -n "${ONLY_STEP}" ]]; then
     case "${ONLY_STEP}" in
-        deps|fonts|nvim|vim|alacritty|starship|shell) ;;
+        deps|fonts|nvim|vim|alacritty|starship|rex|shell) ;;
         *)
             _err "Invalid step: ${ONLY_STEP}"
-            _err "Valid steps: deps, fonts, nvim, vim, alacritty, starship, shell"
+            _err "Valid steps: deps, fonts, nvim, vim, alacritty, starship, rex, shell"
             exit 1
             ;;
     esac
@@ -218,6 +225,10 @@ should_run() {
     fi
 
     if [[ "${step}" == "starship" && "${SKIP_STARSHIP}" == true ]]; then
+        return 1
+    fi
+
+    if [[ "${step}" == "rex" && "${SKIP_REX}" == true ]]; then
         return 1
     fi
 
@@ -304,6 +315,7 @@ main() {
     run_step "nvim"      "${SCRIPTS}/setup_nvim.sh"         "Setup Neovim Config"
     run_step "vim"       "${SCRIPTS}/setup_vim.sh"          "Setup Vim Config"
     run_step "alacritty" "${SCRIPTS}/setup_alacritty.sh"    "Setup Alacritty Config"
+    run_step "rex"       "${SCRIPTS}/setup_rex.sh"          "Setup Rex Multiplexer Config"
     run_step "starship"  "${SCRIPTS}/setup_starship.sh"     "Setup Starship Prompt (Linux only)"
     run_step "shell"     "${SCRIPTS}/setup_shell.sh"        "Setup Shell Environment & Aliases"
 
