@@ -34,10 +34,10 @@ fi
 COMMON_PKGS=(git curl wget ripgrep fzf fd lazygit)
 
 # macOS-only (via Homebrew)
-BREW_EXTRAS=(node lua luarocks imagemagick pkg-config)
+BREW_EXTRAS=(node lua luarocks)
 
 # Linux-only extras (tmux: macOS uses Rex as its multiplexer)
-LINUX_EXTRAS=(tmux build-essential unzip fontconfig pkg-config libmagickwand-dev imagemagick)
+LINUX_EXTRAS=(tmux build-essential unzip fontconfig)
 
 # ---------------------------------------------------------------------------
 # Helpers
