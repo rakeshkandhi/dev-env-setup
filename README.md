@@ -18,11 +18,11 @@
 
 Three terminal tools, one cohesive experience:
 
-| Tool | Role |
-| :--- | :--- |
-| **[Alacritty](https://alacritty.org/)** | GPU-accelerated terminal emulator — fast, minimal, cross-platform |
-| **[tmux](https://github.com/tmux/tmux)** | Terminal multiplexer — sessions, windows, panes |
-| **[Neovim](https://neovim.io/)** | Hyperextensible text editor — LSP, Treesitter, Telescope |
+| Tool                                     | Role                                                              |
+| :--------------------------------------- | :---------------------------------------------------------------- |
+| **[Alacritty](https://alacritty.org/)**  | GPU-accelerated terminal emulator — fast, minimal, cross-platform |
+| **[tmux](https://github.com/tmux/tmux)** | Terminal multiplexer — sessions, windows, panes                   |
+| **[Neovim](https://neovim.io/)**         | Hyperextensible text editor — LSP, Treesitter, Telescope          |
 
 What makes them feel like **one tool**:
 
@@ -83,17 +83,17 @@ cd dev-env-setup
 
 The install script performs the following in order:
 
-| Step | Description |
-| :--- | :--- |
-| **OS Detection** | Auto-detects macOS or Linux distro (Ubuntu/Debian, Fedora, Arch) and selects the correct package manager |
-| **Dependencies** | Installs core tools via `brew` / `apt` / `dnf` / `pacman`: Neovim, tmux, ripgrep, fd, lazygit, and more |
-| **Fonts** | Downloads and installs **MesloLGS Nerd Font** from the [nerd-fonts](https://github.com/ryanoasis/nerd-fonts) releases |
-| **Neovim** | Clones [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) to `~/.config/nvim` (with HTTPS fallback) — Lazy.nvim auto-installs all plugins on first launch |
-| **Vim** | Symlinks [`vim/vimrc`](vim/vimrc) to `~/.vimrc` |
-| **tmux** | Symlinks tmux config to `~/.config/tmux/`, installs TPM, and auto-installs plugins non-interactively |
-| **Alacritty** | Symlinks Alacritty config to `~/.config/alacritty/` |
-| **Starship** | Installs **Starship prompt** (Linux only) and symlinks Catppuccin Mocha theme to `~/.config/starship.toml` |
-| **Shell** | Configures `EDITOR=nvim`, aliases (`v`, `t`), and full **fzf** integration (`eval`, `vf` / `fcd` / `fbr` / `fwt` / `fwa` / `fwr` / `fkill`, `cd **` / `kill **` completion) in `~/.zshrc` / `~/.bashrc` |
+| Step             | Description                                                                                                                                                                                             |
+| :--------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **OS Detection** | Auto-detects macOS or Linux distro (Ubuntu/Debian, Fedora, Arch) and selects the correct package manager                                                                                                |
+| **Dependencies** | Installs core tools via `brew` / `apt` / `dnf` / `pacman`: Neovim, tmux, ripgrep, fd, lazygit, and more                                                                                                 |
+| **Fonts**        | Downloads and installs **MesloLGS Nerd Font** from the [nerd-fonts](https://github.com/ryanoasis/nerd-fonts) releases                                                                                   |
+| **Neovim**       | Clones [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) to `~/.config/nvim` (with HTTPS fallback) — Lazy.nvim auto-installs all plugins on first launch                                      |
+| **Vim**          | Symlinks [`vim/vimrc`](vim/vimrc) to `~/.vimrc`                                                                                                                                                         |
+| **tmux**         | Symlinks tmux config to `~/.config/tmux/`, installs TPM, and auto-installs plugins non-interactively                                                                                                    |
+| **Alacritty**    | Symlinks Alacritty config to `~/.config/alacritty/`                                                                                                                                                     |
+| **Starship**     | Installs **Starship prompt** (Linux only) and symlinks Catppuccin Mocha theme to `~/.config/starship.toml`                                                                                              |
+| **Shell**        | Configures `EDITOR=nvim`, aliases (`v`, `t`), and full **fzf** integration (`eval`, `vf` / `fcd` / `fbr` / `fwt` / `fwa` / `fwr` / `fkill`, `cd **` / `kill **` completion) in `~/.zshrc` / `~/.bashrc` |
 
 ### 4. Post-install steps
 
@@ -122,13 +122,13 @@ cd /path/to/dev-env-setup
 
 ### 3. What happens during an update
 
-| Step | Description |
-| :--- | :--- |
-| **Self-update** | Pulls the latest changes for this repo (`git pull`) |
-| **Neovim config** | Pulls the latest Neovim config (`git pull` in `~/.config/nvim`) |
+| Step              | Description                                                        |
+| :---------------- | :----------------------------------------------------------------- |
+| **Self-update**   | Pulls the latest changes for this repo (`git pull`)                |
+| **Neovim config** | Pulls the latest Neovim config (`git pull` in `~/.config/nvim`)    |
 | **TPM & Plugins** | Updates TPM and auto-updates tmux plugins via `update_plugins all` |
-| **Symlinks** | Re-verifies symlinks for tmux, Alacritty, and Vim configs |
-| **Shell & Deps** | Re-applies shell aliases and updates dependencies if needed |
+| **Symlinks**      | Re-verifies symlinks for tmux, Alacritty, and Vim configs          |
+| **Shell & Deps**  | Re-applies shell aliases and updates dependencies if needed        |
 
 ### 4. Post-update steps
 
@@ -180,10 +180,10 @@ Don't need everything? Target specific components:
 
 Instead of two status bars (tmux + Neovim's lualine), **vim-tpipeline** merges them into one:
 
-| Context | What the status bar shows |
-| :--- | :--- |
+| Context           | What the status bar shows                                              |
+| :---------------- | :--------------------------------------------------------------------- |
 | **Inside Neovim** | tmux renders lualine content — mode, filename, diagnostics, git branch |
-| **In the shell** | tmux shows its own bar — session name, windows, git branch, clock |
+| **In the shell**  | tmux shows its own bar — session name, windows, git branch, clock      |
 
 The result: a clean, single status bar that adapts to context.
 
@@ -205,13 +205,13 @@ The result: a clean, single status bar that adapts to context.
 
 Copying works everywhere, pasting works anywhere:
 
-| Action | Result |
-| :--- | :--- |
-| Yank in Neovim (`y`) | → system clipboard (`unnamedplus`) |
+| Action                 | Result                                                      |
+| :--------------------- | :---------------------------------------------------------- |
+| Yank in Neovim (`y`)   | → system clipboard (`unnamedplus`)                          |
 | Yank in tmux copy mode | → system clipboard (`pbcopy` / `xclip`, or OSC 52 over SSH) |
-| `Ctrl-a g` in tmux | → current git branch name to system clipboard |
-| `Ctrl-a y` in tmux | → current directory path to system clipboard |
-| Paste | `Cmd+V` (macOS) or `Ctrl+Shift+V` (Linux) |
+| `Ctrl-a g` in tmux     | → current git branch name to system clipboard               |
+| `Ctrl-a y` in tmux     | → current directory path to system clipboard                |
+| Paste                  | `Cmd+V` (macOS) or `Ctrl+Shift+V` (Linux)                   |
 
 Over SSH there is no local X display, so tmux hands copied text to your terminal with an OSC 52 escape sequence and it lands on the clipboard of the machine you're sitting at. Needs a terminal that supports OSC 52 (Alacritty, kitty, WezTerm, iTerm2); the Linux virtual console does not.
 
@@ -219,15 +219,15 @@ Over SSH there is no local X display, so tmux hands copied text to your terminal
 
 A consistent color palette across all three tools:
 
-| Color | Hex | Usage |
-| :--- | :--- | :--- |
-| Base | `#1E1E2E` | Background |
-| Text | `#CDD6F4` | Foreground text |
-| Blue | `#89B4FA` | Keywords, links |
-| Mauve | `#CBA6F7` | Statements, tags |
-| Green | `#A6E3A1` | Strings, success |
-| Red | `#F38BA8` | Errors, deletions |
-| Peach | `#FAB387` | Numbers, warnings |
+| Color     | Hex       | Usage                    |
+| :-------- | :-------- | :----------------------- |
+| Base      | `#1E1E2E` | Background               |
+| Text      | `#CDD6F4` | Foreground text          |
+| Blue      | `#89B4FA` | Keywords, links          |
+| Mauve     | `#CBA6F7` | Statements, tags         |
+| Green     | `#A6E3A1` | Strings, success         |
+| Red       | `#F38BA8` | Errors, deletions        |
+| Peach     | `#FAB387` | Numbers, warnings        |
 | Surface 0 | `#313244` | UI borders, line numbers |
 
 ---
@@ -236,49 +236,49 @@ A consistent color palette across all three tools:
 
 ### tmux — prefix: `Ctrl-a`
 
-| Key | Action |
-| :--- | :--- |
-| `prefix + -` | Split pane horizontally |
-| `prefix + \` | Split pane vertically |
-| `prefix + H/J/K/L` | Resize pane in direction |
-| `prefix + r` | Reload tmux config |
-| `prefix + I` | Install TPM plugins |
-| `prefix + U` | Update TPM plugins |
-| `Ctrl-h/j/k/l` | Navigate panes (+ Neovim splits) |
-| `Shift-H` | Previous window |
-| `Shift-L` | Next window |
+| Key                | Action                           |
+| :----------------- | :------------------------------- |
+| `prefix + -`       | Split pane horizontally          |
+| `prefix + \`       | Split pane vertically            |
+| `prefix + H/J/K/L` | Resize pane in direction         |
+| `prefix + r`       | Reload tmux config               |
+| `prefix + I`       | Install TPM plugins              |
+| `prefix + U`       | Update TPM plugins               |
+| `Ctrl-h/j/k/l`     | Navigate panes (+ Neovim splits) |
+| `Shift-H`          | Previous window                  |
+| `Shift-L`          | Next window                      |
 
 ### fzf — shell fuzzy finder
 
-| Key / Command | Action |
-| :--- | :--- |
-| `Ctrl-T` | Fuzzy-find files (with preview) |
-| `Ctrl-R` | Fuzzy-search command history |
-| `Alt-C` | Fuzzy-find a directory and `cd` |
-| `cd **<Tab>` | Fuzzy-complete a directory |
-| `kill **<Tab>` | Fuzzy-pick a process to kill |
-| `vf` | Fuzzy-find file(s) → open in Neovim |
-| `fcd` | Fuzzy-find a directory and `cd` |
-| `fbr` | Fuzzy-find a git branch and check it out (worktree-aware) |
-| `fwt` | Fuzzy-switch between existing git worktrees |
-| `fwa` | Create a git worktree for a branch and cd into it |
-| `fwr` | Fuzzy-remove a git worktree |
-| `fkill` | Fuzzy-pick process(es) and kill |
+| Key / Command  | Action                                                    |
+| :------------- | :-------------------------------------------------------- |
+| `Ctrl-T`       | Fuzzy-find files (with preview)                           |
+| `Ctrl-R`       | Fuzzy-search command history                              |
+| `Alt-C`        | Fuzzy-find a directory and `cd`                           |
+| `cd **<Tab>`   | Fuzzy-complete a directory                                |
+| `kill **<Tab>` | Fuzzy-pick a process to kill                              |
+| `vf`           | Fuzzy-find file(s) → open in Neovim                       |
+| `fcd`          | Fuzzy-find a directory and `cd`                           |
+| `fbr`          | Fuzzy-find a git branch and check it out (worktree-aware) |
+| `fwt`          | Fuzzy-switch between existing git worktrees               |
+| `fwa`          | Create a git worktree for a branch and cd into it         |
+| `fwr`          | Fuzzy-remove a git worktree                               |
+| `fkill`        | Fuzzy-pick process(es) and kill                           |
 
 ### Neovim — leader: `Space`
 
-| Key | Action |
-| :--- | :--- |
-| `Space + ff` | Find files (Telescope) |
-| `Space + fg` | Live grep (Telescope) |
-| `Space + fb` | Buffers (Telescope) |
-| `Shift-H` | Previous buffer |
-| `Shift-L` | Next buffer |
-| `gd` | Go to definition |
-| `gr` | Go to references |
-| `K` | Hover documentation |
-| `Space + ca` | Code action |
-| `Space + rn` | Rename symbol |
+| Key            | Action                         |
+| :------------- | :----------------------------- |
+| `Space + ff`   | Find files (Telescope)         |
+| `Space + fg`   | Live grep (Telescope)          |
+| `Space + fb`   | Buffers (Telescope)            |
+| `Shift-H`      | Previous buffer                |
+| `Shift-L`      | Next buffer                    |
+| `gd`           | Go to definition               |
+| `gr`           | Go to references               |
+| `K`            | Hover documentation            |
+| `Space + ca`   | Code action                    |
+| `Space + rn`   | Rename symbol                  |
 | `Ctrl-h/j/k/l` | Navigate splits (+ tmux panes) |
 
 ---
@@ -317,13 +317,13 @@ dev-env-setup/
 
 ## 📍 Config Locations After Install
 
-| Tool | Config Path | Source |
-| :--- | :--- | :--- |
-| Alacritty | `~/.config/alacritty/` | Symlink → this repo's `alacritty/` |
-| tmux | `~/.config/tmux/` | Symlink → this repo's `tmux/` |
-| Neovim | `~/.config/nvim/` | Git clone from [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) |
-| Vim | `~/.vimrc` | Symlink → this repo's `vim/vimrc` |
-| Starship | `~/.config/starship.toml` | Symlink → this repo's `starship/starship.toml` (Linux) |
+| Tool      | Config Path               | Source                                                                     |
+| :-------- | :------------------------ | :------------------------------------------------------------------------- |
+| Alacritty | `~/.config/alacritty/`    | Symlink → this repo's `alacritty/`                                         |
+| tmux      | `~/.config/tmux/`         | Symlink → this repo's `tmux/`                                              |
+| Neovim    | `~/.config/nvim/`         | Git clone from [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) |
+| Vim       | `~/.vimrc`                | Symlink → this repo's `vim/vimrc`                                          |
+| Starship  | `~/.config/starship.toml` | Symlink → this repo's `starship/starship.toml` (Linux)                     |
 
 > **Why symlinks?** Editing configs in the repo automatically updates the live config. No copying, no drift.
 
@@ -341,6 +341,7 @@ printf "\x1b[38;2;255;100;0mTrueColor Test\x1b[0m\n"
 ```
 
 If the text appears **orange**, true color is working. If not:
+
 - Make sure you're using **Alacritty** (it supports true color out of the box)
 - Verify `TERM` is set to `xterm-256color` or `alacritty`
 - In tmux, check that `default-terminal` is set to `tmux-256color`
@@ -351,6 +352,7 @@ If the text appears **orange**, true color is working. If not:
 <summary><strong>Icons/glyphs not rendering (□ or ?)</strong></summary>
 
 The MesloLGS Nerd Font must be set as your terminal font:
+
 - **Alacritty**: This is handled automatically by the config
 - **Other terminals**: Manually set the font to `MesloLGS Nerd Font` in your terminal's preferences
 - Verify the font is installed: `fc-list | grep -i meslo` (Linux) or check Font Book (macOS)
@@ -399,3 +401,5 @@ This project is licensed under the [MIT License](LICENSE).
 <p align="center">
   <sub>Built with ☕ by <a href="https://github.com/rakeshkandhi">rakeshkandhi</a></sub>
 </p>
+
+![Preview](https://picsum.photos/400/300)
