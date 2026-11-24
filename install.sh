@@ -19,9 +19,13 @@
 #   3. Install fonts
 #   4. Setup Neovim
 #   5. Setup Vim
-#   6. Setup Alacritty
-#   7. Setup Starship Prompt (Linux only)
-#   8. Setup Shell Environment & Aliases
+#   6. Setup tmux (Linux only)
+#   7. Setup Alacritty
+#   8. Setup Rex
+#   9. Setup Starship Prompt (Linux only)
+#  10. Setup Shell Environment & Aliases
+#
+# Supported platforms: macOS and Linux (Ubuntu/Debian, Fedora, Arch).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -56,7 +60,7 @@ print_banner() {
     ║                                                      ║
     ║         🔄  Dev Environment Updating  🔄             ║
     ║                                                      ║
-    ║   Alacritty  •  Vim  •  Neovim                       ║
+    ║   Rex  •  Alacritty  •  tmux  •  Vim  •  Neovim      ║
     ║   Catppuccin Mocha  •  MesloLGS Nerd Font            ║
     ║                                                      ║
     ╚══════════════════════════════════════════════════════╝
@@ -67,7 +71,7 @@ EOF
     ║                                                      ║
     ║          🚀  Dev Environment Setup  🚀               ║
     ║                                                      ║
-    ║   Alacritty  •  Vim  •  Neovim                       ║
+    ║   Rex  •  Alacritty  •  tmux  •  Vim  •  Neovim      ║
     ║   Catppuccin Mocha  •  MesloLGS Nerd Font            ║
     ║                                                      ║
     ╚══════════════════════════════════════════════════════╝
@@ -90,8 +94,10 @@ Commands:
 
 Options:
   --only <step>    Run only a specific step. Valid steps:
-                     deps, fonts, nvim, vim, alacritty, starship, rex, shell
+                     deps, fonts, nvim, vim, tmux, alacritty, rex, starship, shell
   --no-deps        Skip dependency installation
+  --no-tmux        Skip tmux setup
+                     (aliases: --skip-tmux, --exclude-tmux)
   --no-alacritty   Skip Alacritty setup & settings porting
                      (aliases: --skip-alacritty, --exclude-alacritty)
   --no-starship    Skip Starship prompt setup
@@ -111,6 +117,7 @@ Examples:
   $(basename "$0") update --only nvim  # Self-update, then only Neovim
   $(basename "$0") --only nvim      # Only setup Neovim
   $(basename "$0") --only vim       # Only setup Vim
+  $(basename "$0") --only tmux      # Only setup tmux
   $(basename "$0") --only starship  # Only setup Starship prompt
   $(basename "$0") --only shell     # Only setup shell environment & aliases
   $(basename "$0") --no-deps        # Skip deps, do everything else
@@ -127,6 +134,7 @@ EOF
 # ---------------------------------------------------------------------------
 ONLY_STEP=""
 SKIP_DEPS=false
+SKIP_TMUX=false
 SKIP_ALACRITTY=false
 SKIP_STARSHIP=false
 SKIP_REX=false
@@ -145,7 +153,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --only)
             if [[ -z "${2:-}" ]]; then
-                _err "--only requires a step name (deps|fonts|nvim|vim|alacritty|starship|shell)"
+                _err "--only requires a step name (deps|fonts|nvim|vim|tmux|alacritty|rex|starship|shell)"
                 exit 1
             fi
             ONLY_STEP="$2"
@@ -153,6 +161,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-deps)
             SKIP_DEPS=true
+            shift
+            ;;
+        --no-tmux|--skip-tmux|--exclude-tmux)
+            SKIP_TMUX=true
             shift
             ;;
         --no-alacritty|--skip-alacritty|--exclude-alacritty)
@@ -191,22 +203,22 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-export SKIP_ALACRITTY SKIP_STARSHIP SKIP_REX SKIP_VIM SKIP_SHELL UPDATE_MODE
+export SKIP_TMUX SKIP_ALACRITTY SKIP_STARSHIP SKIP_REX SKIP_VIM SKIP_SHELL UPDATE_MODE
 
 # Validate --only step
 if [[ -n "${ONLY_STEP}" ]]; then
     case "${ONLY_STEP}" in
-        deps|fonts|nvim|vim|alacritty|starship|rex|shell) ;;
+        deps|fonts|nvim|vim|tmux|alacritty|rex|starship|shell) ;;
         *)
             _err "Invalid step: ${ONLY_STEP}"
-            _err "Valid steps: deps, fonts, nvim, vim, alacritty, starship, rex, shell"
+            _err "Valid steps: deps, fonts, nvim, vim, tmux, alacritty, rex, starship, shell"
             exit 1
             ;;
     esac
 fi
 
 # ---------------------------------------------------------------------------
-# Should-run helper (respects --only, --no-deps, --no-alacritty, --no-starship, --no-vim, --no-shell)
+# Should-run helper (respects --only and the --no-<step> flags)
 # ---------------------------------------------------------------------------
 should_run() {
     local step="$1"
@@ -216,37 +228,23 @@ should_run() {
         return
     fi
 
-    if [[ "${step}" == "deps" && "${SKIP_DEPS}" == true ]]; then
-        return 1
-    fi
-
-    if [[ "${step}" == "alacritty" && "${SKIP_ALACRITTY}" == true ]]; then
-        return 1
-    fi
-
-    if [[ "${step}" == "starship" && "${SKIP_STARSHIP}" == true ]]; then
-        return 1
-    fi
-
-    if [[ "${step}" == "rex" && "${SKIP_REX}" == true ]]; then
-        return 1
-    fi
-
-    if [[ "${step}" == "vim" && "${SKIP_VIM}" == true ]]; then
-        return 1
-    fi
-
-    if [[ "${step}" == "shell" && "${SKIP_SHELL}" == true ]]; then
-        return 1
-    fi
-
-    return 0
+    case "${step}" in
+        deps)      [[ "${SKIP_DEPS}" != true ]] ;;
+        tmux)      [[ "${SKIP_TMUX}" != true ]] ;;
+        alacritty) [[ "${SKIP_ALACRITTY}" != true ]] ;;
+        rex)       [[ "${SKIP_REX}" != true ]] ;;
+        starship)  [[ "${SKIP_STARSHIP}" != true ]] ;;
+        vim)       [[ "${SKIP_VIM}" != true ]] ;;
+        shell)     [[ "${SKIP_SHELL}" != true ]] ;;
+        *)         return 0 ;;
+    esac
 }
 
 # ---------------------------------------------------------------------------
 # Run step (respects --dry-run)
 # ---------------------------------------------------------------------------
 RESULTS=()
+FAILED=0
 
 run_step() {
     local name="$1"
@@ -271,6 +269,7 @@ run_step() {
     else
         RESULTS+=("${RED} ✗  ${RESET}  ${label}")
         _err "${label} — failed"
+        FAILED=$((FAILED + 1))
     fi
 }
 
@@ -309,24 +308,22 @@ main() {
         export OS_TYPE LINUX_DISTRO PKG_MANAGER
     fi
 
-    # Steps 1–6
     run_step "deps"      "${SCRIPTS}/install_deps.sh"      "Install Dependencies"
     run_step "fonts"     "${SCRIPTS}/install_fonts.sh"      "Install MesloLGS Nerd Font"
     run_step "nvim"      "${SCRIPTS}/setup_nvim.sh"         "Setup Neovim Config"
     run_step "vim"       "${SCRIPTS}/setup_vim.sh"          "Setup Vim Config"
+    run_step "tmux"      "${SCRIPTS}/setup_tmux.sh"         "Setup tmux Config & TPM (Linux only)"
     run_step "alacritty" "${SCRIPTS}/setup_alacritty.sh"    "Setup Alacritty Config"
     run_step "rex"       "${SCRIPTS}/setup_rex.sh"          "Setup Rex Multiplexer Config"
     run_step "starship"  "${SCRIPTS}/setup_starship.sh"     "Setup Starship Prompt (Linux only)"
     run_step "shell"     "${SCRIPTS}/setup_shell.sh"        "Setup Shell Environment & Aliases"
 
     # ------------------------------------------------------------------
-    # Post-Install: Clean Caches & Reload
+    # Post-Install: clear the Neovim cache only when Neovim was touched
     # ------------------------------------------------------------------
-    if [[ "${DRY_RUN}" == false ]]; then
-        _step "Cleaning Caches & Reloading"
-        
-        _info "Deleting Neovim cache (~/.cache/nvim)..."
-        rm -rf ~/.cache/nvim
+    if [[ "${DRY_RUN}" == false ]] && should_run "nvim"; then
+        _step "Cleaning Neovim Cache"
+        rm -rf "${HOME}/.cache/nvim"
         RESULTS+=("${GREEN} ✓  ${RESET}  Clean Neovim Cache")
     fi
 
@@ -359,6 +356,11 @@ main() {
             echo "  2. Open Neovim — plugins will auto-install on first launch"
             echo ""
         fi
+    fi
+
+    if (( FAILED > 0 )); then
+        _err "${FAILED} step(s) failed — see the output above"
+        exit 1
     fi
 }
 

@@ -6,7 +6,7 @@ This document provides a comprehensive analysis of all **tmux** and **Neovim** p
 
 ## 🛠️ 1. Tmux Extensions & Plugins (TPM)
 
-Tmux is managed via **TPM (Tmux Plugin Manager)**. Plugins are defined in [`tmux/tmux.conf`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/tmux/tmux.conf) and automatically installed during setup.
+Tmux is managed via **TPM (Tmux Plugin Manager)**. Plugins are defined in [`tmux/tmux.conf`](tmux/tmux.conf) and automatically installed during setup.
 
 ### 🧩 Plugin Inventory
 
@@ -18,7 +18,7 @@ Tmux is managed via **TPM (Tmux Plugin Manager)**. Plugins are defined in [`tmux
 | **tmux-continuum**     | [`tmux-plugins/tmux-continuum`](https://github.com/tmux-plugins/tmux-continuum)       | Continuous background auto-saving of tmux sessions every 15 minutes and automatic restoration when tmux starts.           |
 | **vim-tmux-navigator** | [`christoomey/vim-tmux-navigator`](https://github.com/christoomey/vim-tmux-navigator) | Allows seamless `Ctrl+h/j/k/l` navigation across tmux split panes and Neovim splits without mode switches.                |
 | **tmux-yank**          | [`tmux-plugins/tmux-yank`](https://github.com/tmux-plugins/tmux-yank)                 | Copies selection directly to the OS system clipboard. Routed through `scripts/tmux_copy.sh` via `@override_copy_command` so copies also work over SSH (OSC 52). |
-| **tmux-sessionizer**   | Custom shell utility ([`scripts/tmux_sessionizer.sh`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/scripts/tmux_sessionizer.sh)) | Fuzzy-finds project directories via fzf and creates or attaches dedicated project tmux sessions in zero keystrokes.       |
+| **tmux-sessionizer**   | Custom shell utility ([`scripts/tmux_sessionizer.sh`](scripts/tmux_sessionizer.sh)) | Fuzzy-finds project directories via fzf and creates or attaches dedicated project tmux sessions in zero keystrokes.       |
 
 ---
 

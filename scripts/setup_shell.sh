@@ -11,7 +11,7 @@
 #
 # Added configuration:
 #   • export EDITOR="nvim" / VISUAL="nvim"
-#   • alias v="nvim"
+#   • alias v="nvim" (+ t="tmux" / ta="tmux-sessionizer" on Linux)
 #   • Dynamic terminal title (Alacritty OSC 0: process · cwd, including outside tmux)
 #   • Option/Alt + Left/Right — jump by word (emacs keymap; EDITOR=nvim would otherwise enable vi)
 #   • fzf eval / sourced key-bindings (Ctrl-T, Ctrl-R, Alt-C, ** completion)
@@ -286,6 +286,12 @@ build_config_block() {
     local nav_block
     nav_block="$(word_nav_block "${sh}")"
 
+    # tmux is Linux-only (macOS uses Rex), so only alias it there.
+    local tmux_aliases=""
+    if [[ "${OS_TYPE}" == "linux" ]]; then
+        tmux_aliases=$'alias t="tmux"\nalias ta="tmux-sessionizer"\n'
+    fi
+
     local starship_block=""
     if [[ "${OS_TYPE}" == "linux" ]]; then
         starship_block="$(starship_integration_block)"
@@ -303,7 +309,7 @@ esac
 export EDITOR="nvim"
 export VISUAL="nvim"
 alias v="nvim"
-
+${tmux_aliases}
 # Ubuntu/Debian ships the fd binary as fdfind. Resolve the real binary name
 # *before* defining the alias: an \`fd\` alias makes \`command -v fd\` succeed, so
 # a bare \`fd\` would end up in FZF_DEFAULT_COMMAND — and fzf runs that through
@@ -402,7 +408,7 @@ fbr() {
 }
 
 # fwt — fuzzy-switch between existing git worktrees (path, HEAD, branch shown)
-#   fwt           pick a worktree from `git worktree list` and cd into it
+#   fwt           pick a worktree from \`git worktree list\` and cd into it
 fwt() {
   git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "fwt: not a git repository" >&2; return 1; }
   local line dir

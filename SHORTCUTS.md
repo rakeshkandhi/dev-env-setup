@@ -1,6 +1,6 @@
 # ⌨️ Neovim + tmux Shortcuts & Reference Guide
 
-Complete keybinding reference for the **Alacritty + tmux + Neovim + fzf** setup.
+Complete keybinding reference for the **Rex / Alacritty + tmux + Neovim + fzf** setup.
 
 | Tool | Master Key |
 | :--- | :--- |
@@ -11,7 +11,7 @@ Complete keybinding reference for the **Alacritty + tmux + Neovim + fzf** setup.
 
 ## 🔄 1. Seamless Navigation (tmux ↔ Neovim)
 
-The same keys work identically in tmux panes **and** Neovim splits — no mode switching needed.
+The same keys work identically in Rex panes, tmux panes **and** Neovim splits — no mode switching needed.
 
 | Shortcut | Action |
 | :--- | :--- |
@@ -19,6 +19,15 @@ The same keys work identically in tmux panes **and** Neovim splits — no mode s
 | `Ctrl-j` | Move focus **Down** |
 | `Ctrl-k` | Move focus **Up** |
 | `Ctrl-l` | Move focus **Right** |
+
+---
+
+### Rex
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Cmd+P` | Fuzzy-find a file in the focused pane's directory → open in **VS Code** |
+| `Cmd+O` | Fuzzy-find a file → open in **Neovim** (in the popup) |
 
 ---
 
