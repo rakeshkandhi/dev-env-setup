@@ -34,10 +34,10 @@ fi
 COMMON_PKGS=(git curl wget ripgrep fzf fd lazygit)
 
 # macOS-only (via Homebrew)
-BREW_EXTRAS=(node lua luarocks)
+BREW_EXTRAS=(node lua luarocks imagemagick pkg-config)
 
 # Linux-only extras
-LINUX_EXTRAS=(build-essential unzip fontconfig)
+LINUX_EXTRAS=(build-essential unzip fontconfig pkg-config libmagickwand-dev imagemagick)
 
 # ---------------------------------------------------------------------------
 # Helpers
