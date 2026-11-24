@@ -47,35 +47,39 @@ end
 -- File Picker (fzf popup -> editor)
 -- ==============================================================================
 -- Opens scripts/rex-find in a floating pane, in the focused pane's directory.
--- editor: "nvim" edits inside the popup; "code -g" opens VS Code and closes it.
+-- "nvim" edits inside the popup; "code -g" opens VS Code and closes the popup.
 local picker = {
-	key = "cmd+p",
-	editor = "code -g",
 	script = HOME .. "/code/dev-env-setup/scripts/rex-find",
 	bounds = { 0.1, 0.1, 0.8, 0.8 }, -- x, y, w, h as fractions of the window
+	-- One entry per shortcut: action name, key, title, editor command.
+	editors = {
+		{ name = "find_file", key = "cmd+p", title = "Find File in VS Code", editor = "code -g" },
+		{ name = "find_file_vim", key = "cmd+o", title = "Find File in Neovim", editor = "nvim" },
+	},
 }
 
-rex.action({
-	name = "find_file",
-	title = "Find File (fzf)",
-	run = function(ctx)
-		local fg = foreground(ctx)
-		rex.session.new_layer({
-			bounds = picker.bounds,
-			focus = true,
-			layout = rex.layout.block({
-				flavor = TERMINAL .. ".shell",
-				label = "find",
-				options = {
-					cwd = (fg and fg.cwd) or HOME,
-					command = { "env", "REX_PICKER_EDITOR=" .. picker.editor, picker.script },
-				},
-			}),
-		})
-	end,
-})
-
-rex.bind(picker.key, "find_file")
+for _, e in ipairs(picker.editors) do
+	rex.action({
+		name = e.name,
+		title = e.title,
+		run = function(ctx)
+			local fg = foreground(ctx)
+			rex.session.new_layer({
+				bounds = picker.bounds,
+				focus = true,
+				layout = rex.layout.block({
+					flavor = TERMINAL .. ".shell",
+					label = "find",
+					options = {
+						cwd = (fg and fg.cwd) or HOME,
+						command = { "env", "REX_PICKER_EDITOR=" .. e.editor, picker.script },
+					},
+				}),
+			})
+		end,
+	})
+	rex.bind(e.key, e.name)
+end
 
 -- ==============================================================================
 -- Remote Hosts
