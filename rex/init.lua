@@ -15,18 +15,21 @@ local function foreground(ctx)
 end
 
 -- ==============================================================================
--- Pane Navigation (Neovim passthrough, works with smart-splits.nvim)
+-- Pane Navigation (Neovim / tmux passthrough)
 -- ==============================================================================
+-- Ctrl-h/j/k/l moves between Rex panes, except when the focused block runs
+-- Neovim (smart-splits.nvim crosses back into Rex itself) or tmux (its own
+-- vim-tmux-navigator bindings handle tmux panes and the Neovim inside them).
 
--- True when the focused block is running vim or nvim.
-local function is_vim(ctx)
+-- True when the focused block is running vim, nvim or tmux.
+local function passes_through(ctx)
 	local fg = foreground(ctx)
 	if not fg then
 		return false
 	end
 	-- Check both fg.name and the basename of fg.argv0
 	for _, s in ipairs({ fg.name or "", (fg.argv0 or ""):match("[^/]*$") }) do
-		if s:match("^n?vim") then
+		if s:match("^n?vim") or s:match("^tmux") then
 			return true
 		end
 	end
@@ -35,8 +38,8 @@ end
 
 for key, direction in pairs({ h = "left", j = "down", k = "up", l = "right" }) do
 	rex.bind("ctrl+" .. key, function(ctx)
-		if is_vim(ctx) then
-			return false -- let Neovim handle it
+		if passes_through(ctx) then
+			return false -- let Neovim / tmux handle it
 		end
 		rex.session.focus_direction({ direction = direction })
 		return true
@@ -46,10 +49,11 @@ end
 -- ==============================================================================
 -- File Picker (fzf popup -> editor)
 -- ==============================================================================
--- Opens scripts/rex-find in a floating pane, in the focused pane's directory.
+-- Opens rex-find (scripts/rex-find, symlinked to ~/.local/bin by
+-- setup_rex.sh) in a floating pane, in the focused pane's directory.
 -- "nvim" edits inside the popup; "code -g" opens VS Code and closes the popup.
 local picker = {
-	script = HOME .. "/code/dev-env-setup/scripts/rex-find",
+	script = HOME .. "/.local/bin/rex-find",
 	bounds = { 0.1, 0.1, 0.8, 0.8 }, -- x, y, w, h as fractions of the window
 	-- One entry per shortcut: action name, key, title, editor command.
 	editors = {

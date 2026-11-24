@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center">🚀 Dev Environment Setup</h1>
   <p align="center">
-    One-command setup for a unified <strong>Alacritty + tmux + Neovim</strong> development environment — themed with Catppuccin Mocha, powered by MesloLGS Nerd Font.
+    One-command setup for a unified <strong>Rex / Alacritty + tmux + Neovim</strong> development environment on macOS and Linux — themed with Catppuccin Mocha, powered by MesloLGS Nerd Font.
   </p>
   <p align="center">
     <img src="https://img.shields.io/badge/macOS-supported-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS" />
@@ -16,12 +16,13 @@
 
 ## ✨ What's Inside
 
-Three terminal tools, one cohesive experience:
+Terminal tools that feel like one:
 
 | Tool                                     | Role                                                              |
 | :--------------------------------------- | :---------------------------------------------------------------- |
+| **Rex**                                  | Terminal + multiplexer — sessions, panes, remote hosts, fzf file picker (`Cmd+P` / `Cmd+O`) |
 | **[Alacritty](https://alacritty.org/)**  | GPU-accelerated terminal emulator — fast, minimal, cross-platform |
-| **[tmux](https://github.com/tmux/tmux)** | Terminal multiplexer — sessions, windows, panes                   |
+| **[tmux](https://github.com/tmux/tmux)** | Terminal multiplexer on **Linux** — sessions, windows, panes (macOS uses Rex instead) |
 | **[Neovim](https://neovim.io/)**         | Hyperextensible text editor — LSP, Treesitter, Telescope          |
 
 What makes them feel like **one tool**:
@@ -29,7 +30,7 @@ What makes them feel like **one tool**:
 - 🎨 **Catppuccin Mocha** — identical color palette across all three configs
 - 🔤 **MesloLGS Nerd Font** — consistent icons and glyphs everywhere
 - 📊 **Unified Status Bar** — [vim-tpipeline](https://github.com/vimpostor/vim-tpipeline) merges Neovim's lualine into tmux's status bar
-- 🧭 **Seamless Navigation** — [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) lets `Ctrl-h/j/k/l` move across tmux panes _and_ Neovim splits
+- 🧭 **Seamless Navigation** — `Ctrl-h/j/k/l` moves across Rex panes, tmux panes _and_ Neovim splits ([smart-splits.nvim](https://github.com/mrjones2014/smart-splits.nvim) + [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator))
 - 📋 **Shared Clipboard** — yank in Neovim or tmux copy mode → system clipboard
 - ⌨️ **[Shortcut Guide](SHORTCUTS.md)** — complete cheat sheet for tmux & Neovim keybindings
 - 🔌 **[Extension & Plugin Architecture Guide](EXTENSIONS.md)** — detailed breakdown of installed Tmux & Neovim extensions, workflow benefits, and efficiency gains
@@ -91,9 +92,10 @@ The install script performs the following in order:
 | **Neovim**       | Clones [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) to `~/.config/nvim` (with HTTPS fallback) — Lazy.nvim auto-installs all plugins on first launch                                      |
 | **Vim**          | Symlinks [`vim/vimrc`](vim/vimrc) to `~/.vimrc`                                                                                                                                                         |
 | **tmux**         | Symlinks tmux config to `~/.config/tmux/`, installs TPM, and auto-installs plugins non-interactively                                                                                                    |
-| **Alacritty**    | Symlinks Alacritty config to `~/.config/alacritty/`                                                                                                                                                     |
+| **Alacritty**    | Installs Alacritty if missing and symlinks its config to `~/.config/alacritty/`                                                                                                                         |
+| **Rex**          | Symlinks `rex/init.lua` to `~/.config/rex/init.lua` and `scripts/rex-find` to `~/.local/bin/rex-find`                                                                                                   |
 | **Starship**     | Installs **Starship prompt** (Linux only) and symlinks Catppuccin Mocha theme to `~/.config/starship.toml`                                                                                              |
-| **Shell**        | Configures `EDITOR=nvim`, aliases (`v`, `t`), and full **fzf** integration (`eval`, `vf` / `fcd` / `fbr` / `fwt` / `fwa` / `fwr` / `fkill`, `cd **` / `kill **` completion) in `~/.zshrc` / `~/.bashrc` |
+| **Shell**        | Configures `EDITOR=nvim`, aliases (`v`, plus `t` / `ta` on Linux), and full **fzf** integration (`eval`, `vf` / `fcd` / `fbr` / `fwt` / `fwa` / `fwr` / `fkill`, `cd **` / `kill **` completion) in `~/.zshrc` / `~/.bashrc` |
 
 ### 4. Post-install steps
 
@@ -145,8 +147,9 @@ Don't need everything? Target specific components:
 # Install only a specific component
 ./install.sh --only nvim       # Only setup Neovim
 ./install.sh --only vim        # Only setup Vim
-./install.sh --only tmux       # Only setup tmux
+./install.sh --only tmux       # Only setup tmux (Linux only)
 ./install.sh --only alacritty  # Only setup Alacritty
+./install.sh --only rex        # Only setup Rex
 ./install.sh --only shell      # Only setup shell environment & aliases
 ./install.sh --only fonts      # Only install fonts
 ./install.sh --only deps       # Only install dependencies
@@ -156,6 +159,10 @@ Don't need everything? Target specific components:
 
 # Exclude Alacritty installation and config porting
 ./install.sh --no-alacritty   # (aliases: --skip-alacritty, --exclude-alacritty)
+
+# Exclude tmux / Rex setup
+./install.sh --no-tmux        # (aliases: --skip-tmux, --exclude-tmux)
+./install.sh --no-rex         # (aliases: --skip-rex, --exclude-rex)
 
 # Exclude Vim setup
 ./install.sh --no-vim         # (aliases: --skip-vim, --exclude-vim)
@@ -170,7 +177,6 @@ Don't need everything? Target specific components:
 ./install.sh update --only nvim   # Update only Neovim config
 ```
 
-> **Note on Alacritty**: If the Alacritty configuration is missing during installation and `--no-alacritty` is not passed, the installer will interactively prompt whether to **(s)kip** or **(i)nstall** Alacritty configuration and binary.
 
 ---
 
@@ -292,6 +298,8 @@ dev-env-setup/
 ├── LICENSE
 ├── alacritty/
 │   └── alacritty.toml      # Alacritty configuration
+├── rex/
+│   └── init.lua            # Rex keybindings, file picker, remote hosts
 ├── starship/
 │   └── starship.toml       # Catppuccin Mocha prompt theme (Linux)
 ├── vim/
@@ -307,7 +315,10 @@ dev-env-setup/
     ├── setup_nvim.sh       # Neovim config setup
     ├── setup_vim.sh        # Vim config setup
     ├── setup_tmux.sh       # tmux config & TPM setup
-    ├── setup_alacritty.sh  # Alacritty config setup
+    ├── setup_alacritty.sh  # Alacritty install & config setup
+    ├── setup_rex.sh        # Rex config setup
+    ├── rex-find            # fzf file picker used by Rex (Cmd+P / Cmd+O)
+    ├── tmux_copy.sh        # Clipboard helper for tmux (OSC 52 + native tools)
     ├── setup_starship.sh   # Starship prompt installer (Linux)
     ├── setup_shell.sh      # Shell env, aliases, fzf integration
     └── tmux_sessionizer.sh # Fuzzy project & session switcher helper (`ta` / `Ctrl-a f`)
@@ -321,6 +332,7 @@ dev-env-setup/
 | :-------- | :------------------------ | :------------------------------------------------------------------------- |
 | Alacritty | `~/.config/alacritty/`    | Symlink → this repo's `alacritty/`                                         |
 | tmux      | `~/.config/tmux/`         | Symlink → this repo's `tmux/`                                              |
+| Rex       | `~/.config/rex/init.lua`  | Symlink → this repo's `rex/init.lua`                                       |
 | Neovim    | `~/.config/nvim/`         | Git clone from [`rakeshkandhi/nvim`](https://github.com/rakeshkandhi/nvim) |
 | Vim       | `~/.vimrc`                | Symlink → this repo's `vim/vimrc`                                          |
 | Starship  | `~/.config/starship.toml` | Symlink → this repo's `starship/starship.toml` (Linux)                     |
@@ -362,7 +374,7 @@ The MesloLGS Nerd Font must be set as your terminal font:
 <details>
 <summary><strong>tmux plugins not working</strong></summary>
 
-1. Make sure TPM is installed: `ls ~/.tmux/plugins/tpm`
+1. Make sure TPM is installed: `ls ~/.config/tmux/plugins/tpm`
 2. Inside tmux, press `Ctrl-a + I` (capital I) to install plugins
 3. If TPM itself is missing, re-run: `./install.sh --only tmux`
 
@@ -401,5 +413,3 @@ This project is licensed under the [MIT License](LICENSE).
 <p align="center">
   <sub>Built with ☕ by <a href="https://github.com/rakeshkandhi">rakeshkandhi</a></sub>
 </p>
-
-![Preview](https://picsum.photos/400/300)

@@ -2,7 +2,8 @@
 # ==============================================================================
 # setup_rex.sh — Rex Terminal Multiplexer Configuration Setup
 # ==============================================================================
-# Symlinks repo rex/init.lua → ~/.config/rex/init.lua
+# • Symlinks repo rex/init.lua   → ~/.config/rex/init.lua
+# • Symlinks scripts/rex-find    → ~/.local/bin/rex-find (file picker popup)
 # ==============================================================================
 set -euo pipefail
 
@@ -62,9 +63,14 @@ main() {
         return 1
     fi
 
+    chmod +x "${SCRIPT_DIR}/rex-find"
+    safe_symlink "${SCRIPT_DIR}/rex-find" "${HOME}/.local/bin/rex-find"
+
     if command -v rex &>/dev/null; then
         _info "Reloading Rex configuration …"
         rex config reload 2>/dev/null || true
+    else
+        _warn "rex is not installed — the config is in place and will load once Rex is installed"
     fi
 
     _ok "Rex setup complete"

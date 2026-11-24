@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] - 2026-08-19 01:29:00 +0530
+## [Unreleased] - 2026-11-24
+
+### Added
+- **tmux is back** (`tmux/`, `scripts/setup_tmux.sh`, `scripts/tmux_copy.sh`, `scripts/tmux_sessionizer.sh`): restored from before `4f0a977`, with the `tmux` install step, `--only tmux` / `--no-tmux`, and the `t` / `ta` aliases. **Linux only** — on macOS Rex is the multiplexer, so the package, config and aliases are skipped there.
+- **`--no-rex` / `--only rex`** documented; `setup_rex.sh` now also links `rex-find` into `~/.local/bin` and warns when Rex isn't installed.
+
+### Fixed
+- **tmux inside Rex**: Rex's `Ctrl-h/j/k/l` bindings now pass through to tmux (as they already did for Neovim), and Neovim's smart-splits picks the tmux backend when `$TMUX` is set.
+- **Sessionizer (`prefix + f`)** now opens in a `display-popup`; under `run-shell` fzf had no terminal to draw on.
+- **`setup_shell.sh`** ran `git worktree list` at install time because of unescaped backticks in a heredoc comment, baking the repo's worktree list into `~/.zshrc`.
+- **`install.sh`** exits non-zero when any step fails, and only clears `~/.cache/nvim` when the Neovim step ran.
+
+### Changed
+- `rex/init.lua` points the file picker at `~/.local/bin/rex-find` instead of a hardcoded clone path.
+- `alacritty.toml` no longer hardcodes a macOS `working_directory`; `setup_alacritty.sh` drops its duplicated fallback config and installs the binary when missing.
+- tmux true color uses `terminal-features … RGB` for both Rex (`xterm-256color`) and Alacritty.
+
+### Removed
+- Untracked `rex/rex_remote_setup_guide.md` (contained tailnet hostnames, IPs and account names).
+
+## [2026-08-19] - 2026-08-19 01:29:00 +0530
 
 ### Added
 - **Vim config tracking** (`vim/vimrc`, `scripts/setup_vim.sh`): the local `~/.vimrc` is now in-repo and symlinked on install (`./install.sh --only vim`). Existing `~/.vimrc` files are timestamp-backed up before the symlink is created.
@@ -51,13 +71,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Custom Catppuccin Mocha palette formatting for fzf UI.
 - **Master Installer (`install.sh`) Integration**: Fully integrated `starship` into `install.sh` with `--only starship`, `--no-starship`, and `--skip-starship` support.
 - **Changelog & Version Logging**: Created `CHANGELOG.md` to track repository release history, changes, and timestamps.
-- **Extension & Plugin Architecture Guide**: Created [`EXTENSIONS.md`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/EXTENSIONS.md) documenting all installed Tmux & Neovim plugins, workflow benefits, and inter-tool efficiency synergies.
-- **Tmux Sessionizer Workflow Utility**: Added [`scripts/tmux_sessionizer.sh`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/scripts/tmux_sessionizer.sh) (`ta` shell alias & `Ctrl-a f` in tmux) for zero-keystroke fuzzy switching between project sessions.
+- **Extension & Plugin Architecture Guide**: Created [`EXTENSIONS.md`](EXTENSIONS.md) documenting all installed Tmux & Neovim plugins, workflow benefits, and inter-tool efficiency synergies.
+- **Tmux Sessionizer Workflow Utility**: Added [`scripts/tmux_sessionizer.sh`](scripts/tmux_sessionizer.sh) (`ta` shell alias & `Ctrl-a f` in tmux) for zero-keystroke fuzzy switching between project sessions.
 
 ### Changed
 - **Linux Distribution Detection (`scripts/detect_os.sh`)**: Enhanced Linux distro resolution to auto-detect Ubuntu derivatives (Pop!_OS, Linux Mint, Elementary OS, Zorin OS, KDE Neon, etc.) via `/etc/os-release` `ID` and `ID_LIKE` scanning.
 - **Shell Installer (`scripts/setup_shell.sh`)**: Refactored rc file block management using `upsert_rc_block` for clean updating without duplicate blocks, targeting `~/.zshrc` on macOS and `~/.bashrc` on Linux.
-- **Documentation**: Updated `README.md` and restructured [`SHORTCUTS.md`](file:///Users/rakeshkandhi/code/personal/dev-env-setup/SHORTCUTS.md) into a high-density, concise quick-reference cheat sheet categorized by navigation, tmux, Neovim, and shell/fzf commands.
+- **Documentation**: Updated `README.md` and restructured [`SHORTCUTS.md`](SHORTCUTS.md) into a high-density, concise quick-reference cheat sheet categorized by navigation, tmux, Neovim, and shell/fzf commands.
 
 ---
 

@@ -36,8 +36,8 @@ COMMON_PKGS=(git curl wget ripgrep fzf fd lazygit)
 # macOS-only (via Homebrew)
 BREW_EXTRAS=(node lua luarocks imagemagick pkg-config)
 
-# Linux-only extras
-LINUX_EXTRAS=(build-essential unzip fontconfig pkg-config libmagickwand-dev imagemagick)
+# Linux-only extras (tmux: macOS uses Rex as its multiplexer)
+LINUX_EXTRAS=(tmux build-essential unzip fontconfig pkg-config libmagickwand-dev imagemagick)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -175,7 +175,7 @@ install_with_dnf() {
 # Install via pacman (Arch)
 # ---------------------------------------------------------------------------
 install_with_pacman() {
-    local pkgs=("${COMMON_PKGS[@]}" base-devel unzip fontconfig nodejs npm)
+    local pkgs=("${COMMON_PKGS[@]}" tmux base-devel unzip fontconfig nodejs npm)
     # Remove build-essential (Arch uses base-devel)
     pkgs=("${pkgs[@]/build-essential/}")
 

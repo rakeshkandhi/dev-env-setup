@@ -7,7 +7,7 @@
 # Repo layout expected:
 #   alacritty/
 #     alacritty.toml
-#     themes/
+# Installs the Alacritty binary first if it is missing.
 # ==============================================================================
 set -euo pipefail
 
@@ -38,140 +38,8 @@ if [[ -z "${OS_TYPE:-}" || -z "${PKG_MANAGER:-}" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Generator & Install Helpers
+# Install Helpers
 # ---------------------------------------------------------------------------
-
-create_default_config() {
-    local target_dir="$1"
-    mkdir -p "${target_dir}"
-    cat << 'EOF' > "${target_dir}/alacritty.toml"
-[general]
-working_directory = "~"
-
-[window]
-padding = { x = 2, y = 2 }
-dimensions = { columns = 120, lines = 35 }
-opacity = 0.9
-blur = true
-dynamic_title = true
-option_as_alt = "Both"
-
-[scrolling]
-multiplier = 1
-
-[selection]
-save_to_clipboard = true
-
-# Default colors (Catppuccin Mocha)
-[colors.primary]
-background = '#1E1E2E'
-foreground = '#CDD6F4'
-dim_foreground = '#CDD6F4'
-bright_foreground = '#CDD6F4'
-
-[colors.cursor]
-text = '#1E1E2E'
-cursor = '#F5E0DC'
-
-[colors.vi_mode_cursor]
-text = '#1E1E2E'
-cursor = '#B4BEFE'
-
-[colors.search.matches]
-foreground = '#1E1E2E'
-background = '#A6ADC8'
-
-[colors.search.focused_match]
-foreground = '#1E1E2E'
-background = '#A6E3A1'
-
-[colors.footer_bar]
-foreground = '#1E1E2E'
-background = '#A6ADC8'
-
-[colors.hints.start]
-foreground = '#1E1E2E'
-background = '#F9E2AF'
-
-[colors.hints.end]
-foreground = '#1E1E2E'
-background = '#A6ADC8'
-
-[colors.selection]
-text = '#1E1E2E'
-background = '#F5E0DC'
-
-[colors.normal]
-black   = '#45475A'
-red     = '#F38BA8'
-green   = '#A6E3A1'
-yellow  = '#F9E2AF'
-blue    = '#89B4FA'
-magenta = '#F5C2E7'
-cyan    = '#94E2D5'
-white   = '#BAC2DE'
-
-[colors.bright]
-black   = '#585B70'
-red     = '#F38BA8'
-green   = '#A6E3A1'
-yellow  = '#F9E2AF'
-blue    = '#89B4FA'
-magenta = '#F5C2E7'
-cyan    = '#94E2D5'
-white   = '#A6ADC8'
-
-[colors.dim]
-black   = '#45475A'
-red     = '#F38BA8'
-green   = '#A6E3A1'
-yellow  = '#F9E2AF'
-blue    = '#89B4FA'
-magenta = '#F5C2E7'
-cyan    = '#94E2D5'
-white   = '#BAC2DE'
-
-[font]
-size = 11
-
-[font.normal]
-family = "MesloLGS Nerd Font"
-style = "Regular"
-
-[font.bold]
-family = "MesloLGS Nerd Font"
-style = "Bold"
-
-[font.italic]
-family = "MesloLGS Nerd Font"
-style = "Italic"
-
-[font.bold_italic]
-family = "MesloLGS Nerd Font"
-style = "Bold Italic"
-
-[keyboard]
-
-[[keyboard.bindings]]
-key = "D"
-mods = "Command"
-chars = "\u0004"
-
-# Option+Left / Option+Right — jump by word (ESC b / ESC f).
-# Explicit chars survive tmux; option_as_alt alone sends CSI that zsh/tmux drop.
-[[keyboard.bindings]]
-key = "Left"
-mods = "Alt"
-chars = "\u001bb"
-
-[[keyboard.bindings]]
-key = "Right"
-mods = "Alt"
-chars = "\u001bf"
-EOF
-    _ok "Created default Alacritty config at ${target_dir}/alacritty.toml"
-}
-
 install_alacritty_binary() {
     if command -v alacritty &>/dev/null; then
         _ok "Alacritty binary is already installed"
@@ -211,39 +79,12 @@ main() {
 
     _info "Setting up Alacritty configuration …"
 
-    # Check if Alacritty config directory and alacritty.toml exist
-    if [[ ! -d "${REPO_ALACRITTY_DIR}" || ! -f "${REPO_ALACRITTY_DIR}/alacritty.toml" ]]; then
-        _warn "Alacritty config not found at ${REPO_ALACRITTY_DIR}"
-
-        # If interactive session, prompt user whether to skip or install
-        if [[ -t 0 ]] || [[ -c /dev/tty ]]; then
-            local choice=""
-            while true; do
-                printf "\033[1;33mAlacritty config is not present. Do you want to (s)kip or (i)nstall Alacritty? [s/i]: \033[0m"
-                read -r choice < /dev/tty || choice="s"
-                case "${choice}" in
-                    [sS]* )
-                        _info "Skipping Alacritty setup per user selection"
-                        return 0
-                        ;;
-                    [iI]* )
-                        _info "Installing & initializing Alacritty configuration …"
-                        create_default_config "${REPO_ALACRITTY_DIR}"
-                        if ! command -v alacritty &>/dev/null; then
-                            install_alacritty_binary
-                        fi
-                        break
-                        ;;
-                    * )
-                        echo "Please enter 's' to skip or 'i' to install."
-                        ;;
-                esac
-            done
-        else
-            _warn "Non-interactive environment and Alacritty config not present — skipping Alacritty setup"
-            return 0
-        fi
+    if [[ ! -f "${REPO_ALACRITTY_DIR}/alacritty.toml" ]]; then
+        _err "Alacritty config not found at ${REPO_ALACRITTY_DIR}/alacritty.toml"
+        return 1
     fi
+
+    install_alacritty_binary
 
     # Ensure parent directory exists
     mkdir -p "${HOME}/.config"
