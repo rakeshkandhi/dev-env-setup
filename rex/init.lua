@@ -50,7 +50,7 @@ end
 -- editor: "nvim" edits inside the popup; "code -g" opens VS Code and closes it.
 local picker = {
 	key = "cmd+p",
-	editor = "nvim",
+	editor = "code -g",
 	script = HOME .. "/code/dev-env-setup/scripts/rex-find",
 	bounds = { 0.1, 0.1, 0.8, 0.8 }, -- x, y, w, h as fractions of the window
 }
