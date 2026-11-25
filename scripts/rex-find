@@ -5,7 +5,12 @@ set -euo pipefail
 
 editor="${REX_PICKER_EDITOR:-nvim}"
 
-file=$(fd --type f --hidden --exclude .git \
+# Show gitignored files too; hide only what the repo's fzf/ignore lists.
+# This script is symlinked into ~/.local/bin, so resolve the link first.
+self="$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")"
+ignore_file="$(cd "$(dirname "${self}")/.." && pwd)/fzf/ignore"
+
+file=$(fd --type f --hidden --no-ignore-vcs --ignore-file "${ignore_file}" \
   | fzf --preview 'head -100 {}' --height 100% --reverse) || exit 0
 
 [[ -z "$file" ]] && exit 0

@@ -2,30 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
----
+## [Unreleased]
 
-## [Unreleased] - 2026-11-24
+## [1.0.1] - 2026-11-25
+
+tmux returns on Linux, and the fzf pickers in the shell and Rex now find gitignored files such as `.env` while still hiding dependency, build and cache folders.
 
 ### Added
 - **tmux is back** (`tmux/`, `scripts/setup_tmux.sh`, `scripts/tmux_copy.sh`, `scripts/tmux_sessionizer.sh`): restored from before `4f0a977`, with the `tmux` install step, `--only tmux` / `--no-tmux`, and the `t` / `ta` aliases. **Linux only** — on macOS Rex is the multiplexer, so the package, config and aliases are skipped there.
 - **`--no-rex` / `--only rex`** documented; `setup_rex.sh` now also links `rex-find` into `~/.local/bin` and warns when Rex isn't installed.
 
-### Fixed
-- **tmux inside Rex**: Rex's `Ctrl-h/j/k/l` bindings now pass through to tmux (as they already did for Neovim), and Neovim's smart-splits picks the tmux backend when `$TMUX` is set.
-- **Sessionizer (`prefix + f`)** now opens in a `display-popup`; under `run-shell` fzf had no terminal to draw on.
-- **`setup_shell.sh`** ran `git worktree list` at install time because of unescaped backticks in a heredoc comment, baking the repo's worktree list into `~/.zshrc`.
-- **`install.sh`** exits non-zero when any step fails, and only clears `~/.cache/nvim` when the Neovim step ran.
-
 ### Changed
+- **fzf pickers show gitignored files** (shell `Ctrl-T` / `Alt-C` / `vf` / `fcd` and the Rex picker): `.gitignore` is no longer honoured, so files like `.env` are findable. Only the dependency, build and cache paths listed in the new `fzf/ignore` file stay hidden (`.git`, `node_modules/`, `dist/`, `build/`, `target/`, `.venv/`, `__pycache__/`, lock files, …). Edit that one file to change what every picker hides.
 - `rex/init.lua` points the file picker at `~/.local/bin/rex-find` instead of a hardcoded clone path.
 - `alacritty.toml` no longer hardcodes a macOS `working_directory`; `setup_alacritty.sh` drops its duplicated fallback config and installs the binary when missing.
 - tmux true color uses `terminal-features … RGB` for both Rex (`xterm-256color`) and Alacritty.
 
 ### Removed
 - Untracked `rex/rex_remote_setup_guide.md` (contained tailnet hostnames, IPs and account names).
+
+### Fixed
+- **tmux inside Rex**: Rex's `Ctrl-h/j/k/l` bindings now pass through to tmux (as they already did for Neovim), and Neovim's smart-splits picks the tmux backend when `$TMUX` is set.
+- **Sessionizer (`prefix + f`)** now opens in a `display-popup`; under `run-shell` fzf had no terminal to draw on.
+- **`setup_shell.sh`** ran `git worktree list` at install time because of unescaped backticks in a heredoc comment, baking the repo's worktree list into `~/.zshrc`.
+- **`install.sh`** exits non-zero when any step fails, and only clears `~/.cache/nvim` when the Neovim step ran.
 
 ## [2026-08-19] - 2026-08-19 01:29:00 +0530
 

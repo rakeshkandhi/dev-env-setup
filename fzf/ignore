@@ -1,0 +1,40 @@
+# Paths hidden from every fzf picker (shell Ctrl-T / Alt-C / vf / fcd and
+# Rex's rex-find). fd reads this via --ignore-file, in .gitignore syntax:
+# a trailing slash matches directories only. .gitignore itself is NOT
+# honoured (--no-ignore-vcs), so gitignored files such as .env stay findable.
+# Keep in sync with the nvim repo's lua/config/plugins/telescope.lua.
+
+# VCS (no slash: a worktree's .git is a file)
+.git
+
+# JavaScript / Node
+node_modules/
+dist/
+build/
+out/
+coverage/
+.vite/
+.next/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.tsbuildinfo
+
+# Python
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+poetry.lock
+
+# Rust
+target/
+
+# Editors, tooling, OS
+.vscode/
+.worktrees/
+.playwright-mcp/
+.DS_Store
