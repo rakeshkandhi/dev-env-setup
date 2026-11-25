@@ -271,6 +271,8 @@ A consistent color palette across all three tools:
 | `fwr`          | Fuzzy-remove a git worktree                               |
 | `fkill`        | Fuzzy-pick process(es) and kill                           |
 
+File and directory pickers (`Ctrl-T`, `Alt-C`, `vf`, `fcd`, and Rex's `Cmd+P` / `Cmd+O`) ignore `.gitignore`, so files like `.env` show up. Paths listed in [`fzf/ignore`](fzf/ignore) (`.git`, `node_modules/`, `dist/`, `build/`, `target/`, `.venv/`, lock files, ...) stay hidden; edit that file to change what every picker hides.
+
 ### Neovim — leader: `Space`
 
 | Key            | Action                         |
@@ -298,6 +300,8 @@ dev-env-setup/
 ├── LICENSE
 ├── alacritty/
 │   └── alacritty.toml      # Alacritty configuration
+├── fzf/
+│   └── ignore              # Paths hidden from every fzf picker (shell + Rex)
 ├── rex/
 │   └── init.lua            # Rex keybindings, file picker, remote hosts
 ├── starship/

@@ -358,6 +358,8 @@ A lightweight `~/.vimrc` for machines without Neovim. Leader is also `Space`.
 | `Alt-C` | Fuzzy-find **directory** → `cd` into it |
 | `Ctrl-u` / `Ctrl-d` | Scroll fzf **preview pane** up / down |
 
+> File and directory pickers show gitignored files (e.g. `.env`). Only paths listed in `fzf/ignore` (`.git`, `node_modules/`, `dist/`, `build/`, `target/`, `.venv/`, lock files, ...) are hidden.
+
 ### fzf Tab Completion (`**`)
 
 | Example | Action |
