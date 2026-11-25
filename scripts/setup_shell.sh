@@ -48,6 +48,7 @@ _err()   { printf '\033[1;31m[ ERR]\033[0m  %s\n' "$*"; }
 # Paths
 # ---------------------------------------------------------------------------
 FZF_CONFIG_DIR="${HOME}/.config/fzf"
+FZF_IGNORE_FILE="$(cd "${SCRIPT_DIR}/.." && pwd)/fzf/ignore"
 FZF_CACHE_DIR="${HOME}/.cache/fzf"
 BLOCK_START="# >>> dev-env-setup >>>"
 BLOCK_END="# <<< dev-env-setup <<<"
@@ -292,6 +293,12 @@ build_config_block() {
         tmux_aliases=$'alias t="tmux"\nalias ta="tmux-sessionizer"\n'
     fi
 
+    # fd flags shared by every fzf file/dir listing: .gitignore is NOT honoured
+    # (--no-ignore-vcs); fzf/ignore in this repo lists what stays hidden.
+    # Inlined at generation time so the rc file needs no runtime word-splitting
+    # (zsh does not split unquoted variables).
+    local fd_flags="--hidden --follow --no-ignore-vcs --ignore-file '${FZF_IGNORE_FILE}'"
+
     local starship_block=""
     if [[ "${OS_TYPE}" == "linux" ]]; then
         starship_block="$(starship_integration_block)"
@@ -326,9 +333,9 @@ fi
 
 # fzf defaults — fd as the finder, cat (or bat) for previews
 if [ -n "\${_DEV_ENV_FD}" ]; then
-  export FZF_DEFAULT_COMMAND="\${_DEV_ENV_FD} --type f --hidden --follow --exclude .git"
+  export FZF_DEFAULT_COMMAND="\${_DEV_ENV_FD} --type f ${fd_flags}"
   export FZF_CTRL_T_COMMAND="\${FZF_DEFAULT_COMMAND}"
-  export FZF_ALT_C_COMMAND="\${_DEV_ENV_FD} --type d --hidden --follow --exclude .git"
+  export FZF_ALT_C_COMMAND="\${_DEV_ENV_FD} --type d ${fd_flags}"
 fi
 
 # Preview must be a standalone command — fzf runs it in a subshell
@@ -368,7 +375,7 @@ fcd() {
   local start="\${1:-.}"
   local dir
   if [ -n "\${_DEV_ENV_FD}" ]; then
-    dir="\$("\${_DEV_ENV_FD}" --type d --hidden --follow --exclude .git . "\${start}" | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
+    dir="\$("\${_DEV_ENV_FD}" --type d ${fd_flags} . "\${start}" | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
   else
     dir="\$(find "\${start}" -type d 2>/dev/null | fzf --preview 'ls -la {}' --preview-window=right:50%:wrap)"
   fi || return
